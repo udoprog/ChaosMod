@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A1936E2E-8F9C-403B-9EEC-257A539935A5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ChaosMod</RootNamespace>
+    <AssemblyName>ChaosMod</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NativeUI">
+      <HintPath>..\lib\NativeUI.dll</HintPath>
+    </Reference>
+    <Reference Include="ScriptHookVDotNet2, Version=2.10.9.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\ScriptHookVDotNet2.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ChaosMod.cs" />
+    <Compile Include="PedExtension.cs" />
+    <Compile Include="Command.cs" />
+    <Compile Include="Commands\Brake.cs" />
+    <Compile Include="Commands\GiveHealth.cs" />
+    <Compile Include="Commands\GiveArmor.cs" />
+    <Compile Include="Commands\GiveAmmo.cs" />
+    <Compile Include="Commands\TakeAllWeapons.cs" />
+    <Compile Include="Commands\TakeAmmo.cs" />
+    <Compile Include="Commands\TakeWeapon.cs" />
+    <Compile Include="Commands\Repair.cs" />
+    <Compile Include="Commands\KillEngine.cs" />
+    <Compile Include="Commands\Fall.cs" />
+    <Compile Include="Commands\BlowTires.cs" />
+    <Compile Include="Commands\SpawnVehicle.cs" />
+    <Compile Include="Commands\SuperJump.cs" />
+    <Compile Include="Commands\SuperSwim.cs" />
+    <Compile Include="Commands\SuperSpeed.cs" />
+    <Compile Include="Commands\SuperBoost.cs" />
+    <Compile Include="Commands\SpawnEnemy.cs" />
+    <Compile Include="Commands\Boost.cs" />
+    <Compile Include="Commands\TakeHealth.cs" />
+    <Compile Include="Commands\Stumble.cs" />
+    <Compile Include="Commands\RandomizeVehicle.cs" />
+    <Compile Include="Commands\RandomizeCharacter.cs" />
+    <Compile Include="Commands\RandomizeColor.cs" />
+    <Compile Include="Commands\License.cs" />
+    <Compile Include="Commands\Invincibility.cs" />
+    <Compile Include="Commands\Wanted.cs" />
+    <Compile Include="Commands\RandomizeWeather.cs" />
+    <Compile Include="Commands\GiveWeapon.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>COPY "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V\scripts"</PostBuildEvent>
+  </PropertyGroup>
+</Project>
