@@ -2,7 +2,13 @@
 
 This is a the GTA V mod for the [`gtav` setmod] module.
 
+It is the mod side that allows viewer interaction like this:
+https://www.twitch.tv/setbac/clip/UnusualCaringNewtWOOP
+
+The bot that handles this is [setmod].
+
 [`gtav` setmod]: https://github.com/udoprog/setmod#gtav
+[setmod]: https://github.com/udoprog/setmod
 
 ## Dependencies
 
