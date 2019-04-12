@@ -13,12 +13,16 @@ namespace ChaosMod.Commands
 		static PedHash[] ENEMY_MODELS = new PedHash[]
 		{
 			PedHash.FbiSuit01,
+			PedHash.FbiSuit01Cutscene,
+			PedHash.FibOffice01SMM,
+			PedHash.FibOffice02SMM,
 		};
 
 		static WeaponHash[] ENEMY_WEAPONS = new WeaponHash[]
 		{
 			WeaponHash.Pistol,
 			WeaponHash.Bat,
+			WeaponHash.Hammer,
 		};
 
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
@@ -57,6 +61,7 @@ namespace ChaosMod.Commands
 				ped.MarkAsNoLongerNeeded();
 
 				var blip = ped.AddBlip();
+				mod.AddTicker(new SpawnEnemyTicker(blip, ped));
 			}
 
 			if (amount == 1)
@@ -66,6 +71,34 @@ namespace ChaosMod.Commands
 			{
 				mod.ShowText($"{from} spawned {amount} fib operatives out to get you!");
 			}
+		}
+	}
+
+	class SpawnEnemyTicker : ITicker
+	{
+		private Blip blip;
+		private Ped ped;
+
+		public SpawnEnemyTicker(Blip blip, Ped ped)
+		{
+			this.blip = blip;
+			this.ped = ped;
+		}
+
+		public bool Tick()
+		{
+			if (this.ped.IsAlive)
+			{
+				return false;
+			}
+
+			this.blip.Remove();
+			return true;
+		}
+
+		public String What()
+		{
+			return null;
 		}
 	}
 }
