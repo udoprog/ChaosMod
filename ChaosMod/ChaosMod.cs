@@ -114,6 +114,9 @@ namespace ChaosMod
 			d.Add("give-armor", new Commands.GiveArmor());
 			d.Add("take-all-weapons", new Commands.TakeAllWeapons());
 			d.Add("give-health", new Commands.GiveHealth());
+			d.Add("exploding-bullets", new Commands.ExplodingBullets());
+			d.Add("drunk", new Commands.Drunk());
+			d.Add("camera-freeze", new Commands.CameraFreeze());
 			return d;
 		}
 
@@ -404,6 +407,10 @@ namespace ChaosMod
 					return JET_SKIS[rnd.Next(0, JET_SKIS.Length)];
 				case "tank":
 					return TANKS[rnd.Next(0, TANKS.Length)];
+				case "hydra":
+					return VehicleHash.Hydra;
+				case "sub":
+					return SUBMERSIBLE[rnd.Next(0, SUBMERSIBLE.Length)];
 				default:
 					return RandomVehicle();
 			}
@@ -538,6 +545,12 @@ namespace ChaosMod
 		static VehicleHash[] TANKS = new VehicleHash[]
 		{
 			VehicleHash.Rhino
+		};
+
+		static VehicleHash[] SUBMERSIBLE = new VehicleHash[]
+		{
+			VehicleHash.Submersible,
+			VehicleHash.Submersible2,
 		};
 
 		static VehicleHash[] FIGHTER_JETS = new VehicleHash[]

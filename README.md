@@ -92,6 +92,7 @@ To blow the tires into your current game.
 * `take-health` - Takes all but 10% of your health.
 * `take-weapon` - Takes the current weapon.
 * `wanted <level>` - Sets the wanted level to `<level>`, `wanted 0` clears your wanted level.
+* `exploding-bullets` - Enable exploding bullets for 10 seconds.
 
 ## License
 
