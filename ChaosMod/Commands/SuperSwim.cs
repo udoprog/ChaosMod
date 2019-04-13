@@ -9,6 +9,8 @@ namespace ChaosMod.Commands
 	/// </summary>
 	public class SuperSwim : Command
 	{
+		private int stacked = 0;
+
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
 			var r = rest.GetEnumerator();
@@ -19,37 +21,46 @@ namespace ChaosMod.Commands
 			}
 
 			var time = float.Parse(r.Current);
-			mod.AddTicker(new SuperSwimTicker(time, 10f));
+			stacked += 1;
+			mod.AddTicker(new SuperSwimTicker(time, this, 10f));
 			mod.ShowText($"{from} gave you with super swim for {time} seconds");
 		}
-	}
 
-	class SuperSwimTicker : ITicker
-	{
-		float timer;
-
-		public SuperSwimTicker(float timer, float multiplier)
+		class SuperSwimTicker : ITicker
 		{
-			this.timer = timer;
-			Game.Player.SetSwimSpeedMultThisFrame(multiplier);
-		}
+			private float timer;
+			private SuperSwim parent;
 
-		public bool Tick()
-		{
-			var delta = Game.LastFrameTime;
-			timer -= delta;
-			if (timer <= 0)
+			public SuperSwimTicker(float timer, SuperSwim parent, float multiplier)
 			{
-				Game.Player.SetSwimSpeedMultThisFrame(1f);
+				this.timer = timer;
+				this.parent = parent;
+				Game.Player.SetSwimSpeedMultThisFrame(multiplier);
+			}
+
+			public bool Tick()
+			{
+				timer -= Game.LastFrameTime;
+
+				if (timer > 0)
+				{
+					return false;
+				}
+
+				parent.stacked -= 1;
+
+				if (parent.stacked == 0)
+				{
+					Game.Player.SetSwimSpeedMultThisFrame(1f);
+				}
+
 				return true;
 			}
 
-			return false;
-		}
-
-		public String What()
-		{
-			return "Super Swim";
+			public String What()
+			{
+				return "Super Swim";
+			}
 		}
 	}
 }

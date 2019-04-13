@@ -19,37 +19,41 @@ namespace ChaosMod.Commands
 			}
 
 			var time = float.Parse(r.Current);
-			mod.AddTicker(new SuperSpeedTicker(time, 10f));
+
+			if (mod.AddUniqueTicker(TickerId.SuperSpeed, new SuperSpeedTicker(time)))
+			{
+				Game.Player.SetRunSpeedMultThisFrame(time);
+			}
+
 			mod.ShowText($"{from} gave you super speed for {time} seconds");
 		}
-	}
 
-	class SuperSpeedTicker : ITicker
-	{
-		float timer;
-
-		public SuperSpeedTicker(float timer, float multiplier)
+		class SuperSpeedTicker : ITicker
 		{
-			this.timer = timer;
-			Game.Player.SetRunSpeedMultThisFrame(multiplier);
-		}
+			private float timer;
 
-		public bool Tick()
-		{
-			var delta = Game.LastFrameTime;
-			timer -= delta;
-			if (timer <= 0)
+			public SuperSpeedTicker(float timer)
 			{
+				this.timer = timer;
+			}
+
+			public bool Tick()
+			{
+				timer -= Game.LastFrameTime;
+
+				if (timer > 0)
+				{
+					return false;
+				}
+
 				Game.Player.SetRunSpeedMultThisFrame(1f);
 				return true;
 			}
 
-			return false;
-		}
-
-		public String What()
-		{
-			return "Super Speed";
+			public String What()
+			{
+				return "Super Speed";
+			}
 		}
 	}
 }

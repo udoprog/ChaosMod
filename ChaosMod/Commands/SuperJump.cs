@@ -19,19 +19,22 @@ namespace ChaosMod.Commands
 			}
 
 			var time = float.Parse(r.Current);
-			mod.AddTicker(new SuperJumpTicker(time));
+			var player = Game.Player;
+
+			mod.AddUniqueTicker(TickerId.SuperJump, new SuperJumpTicker(time, player));
 			mod.ShowText($"{from} gave you with super jump for {time} seconds");
 		}
 	}
 
 	class SuperJumpTicker : ITicker
 	{
-		float timer;
+		private float timer;
+		private Player player;
 
-		public SuperJumpTicker(float timer)
+		public SuperJumpTicker(float timer, Player player)
 		{
 			this.timer = timer;
-			Game.Player.SetSuperJumpThisFrame();
+			this.player = player;
 		}
 
 		public bool Tick()
@@ -43,7 +46,7 @@ namespace ChaosMod.Commands
 				return true;
 			}
 
-			Game.Player.SetSuperJumpThisFrame();
+			player.SetSuperJumpThisFrame();
 			return false;
 		}
 

@@ -65,7 +65,6 @@
     <Compile Include="Commands\SuperJump.cs" />
     <Compile Include="Commands\SuperSwim.cs" />
     <Compile Include="Commands\SuperSpeed.cs" />
-    <Compile Include="Commands\SuperBoost.cs" />
     <Compile Include="Commands\SpawnEnemy.cs" />
     <Compile Include="Commands\Boost.cs" />
     <Compile Include="Commands\TakeHealth.cs" />

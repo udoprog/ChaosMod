@@ -18,20 +18,34 @@ namespace ChaosMod.Commands
 				return;
 			}
 
+			var player = Game.Player.Character;
+
+			if (player == null)
+			{
+				mod.ShowText($"{from} tried to give you invincibility :(");
+				return;
+			}
+
 			var time = float.Parse(r.Current);
-			mod.AddTicker(new InvincibilityTicker(time));
+
+			if (mod.AddUniqueTicker(TickerId.Invincibility, new InvincibilityTicker(time, player)))
+			{
+				Game.Player.IsInvincible = true;
+			}
+
 			mod.ShowText($"{from} gave you invincibility for {time} seconds!");
 		}
 	}
 
 	class InvincibilityTicker : ITicker
 	{
-		float timer;
+		private float timer;
+		private Ped ped;
 
-		public InvincibilityTicker(float timer)
+		public InvincibilityTicker(float timer, Ped ped)
 		{
 			this.timer = timer;
-			Game.Player.IsInvincible = true;
+			this.ped = ped;
 		}
 
 		public bool Tick()
@@ -41,7 +55,7 @@ namespace ChaosMod.Commands
 
 			if (timer <= 0)
 			{
-				Game.Player.IsInvincible = false;
+				ped.IsInvincible = false;
 				return true;
 			}
 

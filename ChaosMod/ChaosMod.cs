@@ -21,13 +21,12 @@ namespace ChaosMod
 		private AsyncCallback recv = null;
 		private UIText text;
 		private UIContainer textContainer;
-		private Random rnd = new Random();
 		private float textTimer = 0.0f;
-		private HateGroup hateGroup;
 		/// <summary>
 		/// Timers currently running.
 		/// </summary>
 		private LinkedList<ITicker> tickers = new LinkedList<ITicker>();
+		private Dictionary<TickerId, ITicker> uniqueTickers = new Dictionary<TickerId, ITicker>();
 
 		public static WeaponHash[] ALL_WEAPONS = (WeaponHash[])Enum.GetValues(typeof(WeaponHash));
 		public static VehicleHash[] ALL_VEHICLES = (VehicleHash[])Enum.GetValues(typeof(VehicleHash));
@@ -42,10 +41,7 @@ namespace ChaosMod
 
 		public HateGroup HateGroup
 		{
-			get
-			{
-				return this.hateGroup;
-			}
+			get;
 		}
 
 		/// <summary>
@@ -53,10 +49,7 @@ namespace ChaosMod
 		/// </summary>
 		public Random Rnd
 		{
-			get
-			{
-				return this.rnd;
-			}
+			get;
 		}
 
 		public Chaos()
@@ -74,7 +67,8 @@ namespace ChaosMod
 
 			Receive();
 
-			hateGroup = new HateGroup();
+			Rnd = new Random();
+			HateGroup = new HateGroup();
 
 			ShowText("ChaosMod Reloaded");
 		}
@@ -97,8 +91,8 @@ namespace ChaosMod
 			d.Add("stumble", new Commands.Stumble());
 			d.Add("take-health", new Commands.TakeHealth());
 			d.Add("spawn-enemy", new Commands.SpawnEnemy());
-			d.Add("boost", new Commands.Boost());
-			d.Add("super-boost", new Commands.SuperBoost());
+			d.Add("boost", new Commands.Boost(false));
+			d.Add("super-boost", new Commands.Boost(true));
 			d.Add("super-speed", new Commands.SuperSpeed());
 			d.Add("super-jump", new Commands.SuperJump());
 			d.Add("super-swim", new Commands.SuperSwim());
@@ -115,7 +109,8 @@ namespace ChaosMod
 			d.Add("take-all-weapons", new Commands.TakeAllWeapons());
 			d.Add("give-health", new Commands.GiveHealth());
 			d.Add("exploding-bullets", new Commands.ExplodingBullets());
-			d.Add("drunk", new Commands.Drunk());
+			d.Add("drunk", new Commands.Drunk(false));
+			d.Add("very-drunk", new Commands.Drunk(true));
 			d.Add("camera-freeze", new Commands.CameraFreeze());
 			return d;
 		}
@@ -142,8 +137,9 @@ namespace ChaosMod
 		private void OnTick(object sender, EventArgs e)
 		{
 			HandleTickers();
+			HandleUniqueTickers();
 			HandleTextTimer();
-			hateGroup.Tick();
+			HateGroup.Tick();
 			CheckQueue();
 		}
 
@@ -266,7 +262,21 @@ namespace ChaosMod
 		}
 
 		/// <summary>
-		/// Handle the amount of time the handbrake should be enabled.
+		/// Add a ticker which there can only exist one of.
+		/// 
+		/// If the ticker exists, replaces it and returns false.
+		/// Otherwise returns true.
+		/// </summary>
+		public bool AddUniqueTicker(TickerId id, ITicker ticker)
+		{
+			var node = this.tickers.AddLast(ticker);
+			var added = !uniqueTickers.ContainsKey(id);
+			uniqueTickers.Add(id, ticker);
+			return added;
+		}
+
+		/// <summary>
+		/// Handle calling tick on all spawned tickers.
 		/// </summary>
 		private void HandleTickers()
 		{
@@ -293,26 +303,35 @@ namespace ChaosMod
 				current = current.Next;
 			}
 		}
-
+		
 		/// <summary>
-		/// Cause the current vehicle to boost.
+		/// Handle calling tick on all unique tickers.
 		/// </summary>
-		public void Boost(bool super)
+		private void HandleUniqueTickers()
 		{
-			Ped player = Game.Player.Character;
+			var removed = new List<TickerId>();
 
-			if (player == null)
+			foreach (var pair in uniqueTickers)
 			{
-				return;
+				if (!pair.Value.Tick())
+				{
+					continue;
+				}
+
+				var what = pair.Value.What();
+
+				if (what != null)
+				{
+					ShowText($"{what} is over", 2f);
+				}
+
+				removed.Add(pair.Key);
 			}
 
-			if (super)
+			// remove all keys that have expired.
+			foreach (var key in removed)
 			{
-				tickers.AddLast(new BoostTicker(player, 10f, 5f, false));
-			}
-			else
-			{
-				tickers.AddLast(new BoostTicker(player, 1f, 1f, true));
+				uniqueTickers.Remove(key);
 			}
 		}
 
@@ -336,9 +355,9 @@ namespace ChaosMod
 		/// </summary>
 		public Color RandomColor()
 		{
-			var r = rnd.Next(0, 256);
-			var g = rnd.Next(0, 256);
-			var b = rnd.Next(0, 256);
+			var r = Rnd.Next(0, 256);
+			var g = Rnd.Next(0, 256);
+			var b = Rnd.Next(0, 256);
 			return Color.FromArgb(r, g, b);
 		}
 
@@ -388,7 +407,7 @@ namespace ChaosMod
 			switch (vehicle)
 			{
 				case "fighter-jet":
-					return FIGHTER_JETS[rnd.Next(0, FIGHTER_JETS.Length)];
+					return FIGHTER_JETS[Rnd.Next(0, FIGHTER_JETS.Length)];
 				case "slow":
 					return PickRandomCar(SLOW_CARS);
 				case "normal":
@@ -400,17 +419,17 @@ namespace ChaosMod
 				case "pedalbike":
 					return PickRandomCar(PEDAL_BIKES);
 				case "gauntlet":
-					return GAUNTLETS[rnd.Next(0, GAUNTLETS.Length)];
+					return GAUNTLETS[Rnd.Next(0, GAUNTLETS.Length)];
 				case "blimp":
-					return BLIMPS[rnd.Next(0, BLIMPS.Length)];
+					return BLIMPS[Rnd.Next(0, BLIMPS.Length)];
 				case "jet-ski":
-					return JET_SKIS[rnd.Next(0, JET_SKIS.Length)];
+					return JET_SKIS[Rnd.Next(0, JET_SKIS.Length)];
 				case "tank":
-					return TANKS[rnd.Next(0, TANKS.Length)];
+					return TANKS[Rnd.Next(0, TANKS.Length)];
 				case "hydra":
 					return VehicleHash.Hydra;
 				case "sub":
-					return SUBMERSIBLE[rnd.Next(0, SUBMERSIBLE.Length)];
+					return SUBMERSIBLE[Rnd.Next(0, SUBMERSIBLE.Length)];
 				default:
 					return RandomVehicle();
 			}
@@ -422,19 +441,19 @@ namespace ChaosMod
 		/// <returns></returns>
 		VehicleHash RandomVehicle()
 		{
-			return ALL_VEHICLES[rnd.Next(0, ALL_VEHICLES.Length)];
+			return ALL_VEHICLES[Rnd.Next(0, ALL_VEHICLES.Length)];
 		}
 
 		VehicleHash? PickRandomCar(List<VehicleHash[]> hashes)
 		{
-			var list = hashes[rnd.Next(0, hashes.Count)];
+			var list = hashes[Rnd.Next(0, hashes.Count)];
 
 			if (list.Length == 0)
 			{
 				return null;
 			}
 
-			return list[rnd.Next(0, list.Length)];
+			return list[Rnd.Next(0, list.Length)];
 		}
 
 		/**
@@ -458,7 +477,7 @@ namespace ChaosMod
 					return;
 				}
 
-				var take = weapons[rnd.Next(0, weapons.Count - 1)];
+				var take = weapons[Rnd.Next(0, weapons.Count - 1)];
 				// take a random weapon.
 				player.Weapons.Remove(take);
 			}
@@ -723,7 +742,7 @@ namespace ChaosMod
 					return null;
 				}
 
-				return missingWeapons[rnd.Next(0, missingWeapons.Count)];
+				return missingWeapons[Rnd.Next(0, missingWeapons.Count)];
 			}
 
 			var player = Game.Player.Character;
@@ -755,7 +774,7 @@ namespace ChaosMod
 				return null;
 			}
 
-			return candidates[rnd.Next(0, candidates.Count)];
+			return candidates[Rnd.Next(0, candidates.Count)];
 		}
 
 		static Dictionary<String, WeaponHash[]> Weapons()
@@ -806,6 +825,16 @@ namespace ChaosMod
 		};
 	}
 
+	/// <summary>
+	/// Identifier for a unique ticker.
+	/// </summary>
+	public enum TickerId
+	{
+		SuperSpeed,
+		SuperJump,
+		Invincibility,
+	}
+
 	public interface ITicker
 	{
 		bool Tick();
@@ -814,81 +843,6 @@ namespace ChaosMod
 		/// What does the ticker do.
 		/// </summary>
 		String What();
-	}
-
-	class BoostTicker : ITicker
-	{
-		/// <summary>
-		/// Player being boosted.
-		/// </summary>
-		Ped player;
-		/// <summary>
-		/// Time the vehicle is being boosted for.
-		/// </summary>
-		float timer;
-		/// <summary>
-		/// Force to apply for the boost.
-		/// </summary>
-		GTA.Math.Vector3 force;
-		/// <summary>
-		/// Does the boost require wheels to be on ground or not.
-		/// </summary>
-		bool wheelsOnGround;
-		/// <summary>
-		/// Is vehicle currently in the air.
-		/// </summary>
-		bool inAir;
-
-		public BoostTicker(Ped player, float factor, float timer, bool wheelsOnGround)
-		{
-			this.player = player;
-			this.timer = timer;
-			this.force = GTA.Math.Vector3.WorldNorth * 100f * factor;
-			this.wheelsOnGround = wheelsOnGround;
-
-			if (!wheelsOnGround && Game.Player.Character != null)
-			{
-				Game.Player.Character.IsInvincible = true;
-			}
-		}
-
-		public bool Tick()
-		{
-			var vehicle = player.CurrentVehicle;
-
-			if (vehicle == null)
-			{
-				return true;
-			}
-
-			var delta = Game.LastFrameTime;
-
-			var isFlying = player.IsInFlyingVehicle && vehicle.IsInAir;
-			var isGrounded = !wheelsOnGround && vehicle.IsInAir || vehicle.IsOnAllWheels;
-
-			if (isFlying || isGrounded)
-			{
-				vehicle.ApplyForceRelative(this.force * delta);
-			}
-
-			timer -= delta;
-			if (timer <= 0)
-			{
-				if (Game.Player.Character != null)
-				{
-					Game.Player.Character.IsInvincible = false;
-				}
-
-				return true;
-			}
-
-			return false;
-		}
-
-		public String What()
-		{
-			return null;
-		}
 	}
 
 	/// <summary>

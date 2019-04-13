@@ -11,6 +11,18 @@ namespace ChaosMod.Commands
 	/// </summary>
 	public class Drunk : Command
 	{
+		private bool veryDrunk;
+		/// <summary>
+		/// How many effects are stacked.
+		/// </summary>
+		private int stacked;
+
+		public Drunk(bool veryDrunk)
+		{
+			this.veryDrunk = veryDrunk;
+			this.stacked = 0;
+		}
+
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
 			var player = Game.Player.Character;
@@ -20,47 +32,73 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			if (!WorldExtension.HasAnimationSetLoaded("move_m@drunk@verydrunk"))
+			this.stacked += 1;
+
+			float amplitude = 1f;
+			string animationSet = "move_m@drunk@moderatedrunk";
+			string what = "drunk";
+
+			if (veryDrunk)
 			{
-				WorldExtension.RequestAnimationSet("move_m@drunk@verydrunk");
+				amplitude = 5f;
+				animationSet = "move_m@drunk@verydrunk";
+				what = "VERY drunk";
 			}
 
-			player.SetPedMovementClipset("move_m@drunk@verydrunk");
-			mod.AddTicker(new DrunkTicker(10, player));
-			mod.ShowText($"{from} made you drunk!");
-		}
-	}
-
-	class DrunkTicker : ITicker
-	{
-		private float timer;
-		private Ped ped;
-
-		public DrunkTicker(float timer, Ped ped)
-		{
-			this.timer = timer;
-			this.ped = ped;
-			this.ped.SetPedIsDrunk(true);
-		}
-
-		public bool Tick()
-		{
-			var delta = Game.LastFrameTime;
-			timer -= delta;
-
-			if (timer <= 0)
+			if (!WorldExtension.HasAnimationSetLoaded(animationSet))
 			{
+				WorldExtension.RequestAnimationSet(animationSet);
+			}
+
+			player.SetPedMovementClipset(animationSet);
+
+			GameplayCamera.Shake(CameraShake.Drunk, amplitude);
+			player.SetConfigFlag(100, true);
+			mod.AddTicker(new DrunkTicker(10, this, player));
+			mod.ShowText($"{from} made you {what}!");
+		}
+
+		class DrunkTicker : ITicker
+		{
+			private float timer;
+			private Drunk drunk;
+			private Ped ped;
+
+			public DrunkTicker(float timer, Drunk drunk, Ped ped)
+			{
+				this.timer = timer;
+				this.drunk = drunk;
+				this.ped = ped;
+				this.ped.SetPedIsDrunk(true);
+			}
+
+			public bool Tick()
+			{
+				var delta = Game.LastFrameTime;
+				timer -= delta;
+
+				if (timer > 0)
+				{
+					return false;
+				}
+
+				this.drunk.stacked -= 1;
+
+				if (this.drunk.stacked == 0)
+				{
+					GameplayCamera.StopShaking();
+					this.ped.ResetPedMovementClipset();
+					this.ped.SetPedIsDrunk(false);
+					this.ped.ResetConfigFlag(100);
+				}
+
 				return true;
 			}
 
-			this.ped.ResetPedMovementClipset();
-			this.ped.SetPedIsDrunk(false);
-			return false;
-		}
-
-		public String What()
-		{
-			return "Drunkenness";
+			public String What()
+			{
+				return "Drunkenness";
+			}
 		}
 	}
 }
