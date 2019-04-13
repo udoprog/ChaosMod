@@ -112,6 +112,9 @@ namespace ChaosMod
 			d.Add("drunk", new Commands.Drunk(false));
 			d.Add("very-drunk", new Commands.Drunk(true));
 			d.Add("camera-freeze", new Commands.CameraFreeze());
+			d.Add("set-on-fire", new Commands.SetOnFire());
+			d.Add("set-peds-on-fire", new Commands.SetPedsOnFire());
+			d.Add("make-fire-proof", new Commands.MakeFireProof());
 			return d;
 		}
 
@@ -128,6 +131,13 @@ namespace ChaosMod
 				{
 					player.Kill();
 				}
+			}
+
+			// for testing cheats
+			if (e.KeyCode == Keys.J)
+			{
+				var args = new List<String>();
+				COMMANDS["set-peds-on-fire"].Handle(this, "tester", args);
 			}
 		}
 
@@ -271,7 +281,7 @@ namespace ChaosMod
 		{
 			var node = this.tickers.AddLast(ticker);
 			var added = !uniqueTickers.ContainsKey(id);
-			uniqueTickers.Add(id, ticker);
+			uniqueTickers[id] = ticker;
 			return added;
 		}
 
@@ -481,37 +491,6 @@ namespace ChaosMod
 				// take a random weapon.
 				player.Weapons.Remove(take);
 			}
-		}
-
-		/// <summary>
-		/// Make the player stumble.
-		/// </summary>
-		public void Stumble(int duration)
-		{
-			Ped player = Game.Player.Character;
-
-			if (player == null)
-			{
-				return;
-			}
-
-			player.Euphoria.ArmsWindmillAdaptive.ResetArguments();
-
-			player.Euphoria.ArmsWindmillAdaptive.AngSpeed = 6f;
-			player.Euphoria.ArmsWindmillAdaptive.Amplitude = 1.5f;
-			player.Euphoria.ArmsWindmillAdaptive.LeftElbowAngle = 0.1f;
-			player.Euphoria.ArmsWindmillAdaptive.RightElbowAngle = 0.1f;
-			player.Euphoria.ArmsWindmillAdaptive.DisableOnImpact = true;
-			player.Euphoria.ArmsWindmillAdaptive.BendLeftElbow = true;
-			player.Euphoria.ArmsWindmillAdaptive.BendRightElbow = true;
-
-			player.Euphoria.ArmsWindmillAdaptive.Start(duration);
-
-			player.Euphoria.ApplyImpulse.ResetArguments();
-			player.Euphoria.ApplyImpulse.Impulse = player.ForwardVector * -100;
-			player.Euphoria.ApplyImpulse.Start(duration);
-
-			player.Euphoria.BodyBalance.Start();
 		}
 
 		public class State
@@ -830,6 +809,8 @@ namespace ChaosMod
 	/// </summary>
 	public enum TickerId
 	{
+		SetOnFire,
+		MakeFireProof,
 		SuperSpeed,
 		SuperJump,
 		Invincibility,

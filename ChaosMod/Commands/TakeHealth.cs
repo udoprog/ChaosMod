@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GTA;
 
 namespace ChaosMod.Commands
 {
@@ -10,7 +11,14 @@ namespace ChaosMod.Commands
 	{
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
-			mod.Stumble(500);
+			Ped player = Game.Player.Character;
+
+			if (player == null)
+			{
+				return;
+			}
+
+			player.Stumble(500);
 			mod.TakeHealth();
 		}
 	}

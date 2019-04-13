@@ -29,6 +29,22 @@ namespace ChaosMod
 		{
 			Function.Call(Hash.REQUEST_ANIM_SET, set);
 		}
+
+		/// <summary>
+		/// Start a script fire.
+		/// </summary>
+		public static int StartScriptFire(GTA.Math.Vector3 pos, int maxChildren, bool isGasFire)
+		{
+			return Function.Call<int>(Hash.START_SCRIPT_FIRE, pos.X, pos.Y, pos.Z, maxChildren, isGasFire);
+		}
+
+		/// <summary>
+		/// Remove the scripted fire.
+		/// </summary>
+		public static void RemoveScriptFire(int handle)
+		{
+			Function.Call(Hash.REMOVE_SCRIPT_FIRE, handle);
+		}
 	}
 
 	public static class PedExtension
@@ -72,6 +88,51 @@ namespace ChaosMod
 		public static void ResetPedMovementClipset(this Ped ped)
 		{
 			Function.Call(Hash.RESET_PED_MOVEMENT_CLIPSET, ped.Handle, 1f);
+		}
+
+		/// <summary>
+		/// Set the given ped on fire.
+		/// 
+		/// NOTE: This doesn't work very well.
+		/// It seems like the game has a fixed limit on how many fires it can run at any given time, and there's no consistent way to clean it up.
+		/// Even StopEntityFire doesn't help.
+		/// </summary>
+		public static Ped StartEntityFire(this Ped ped)
+		{
+			var handle = Function.Call<int>(Hash.START_ENTITY_FIRE, ped.Handle);
+			return new Ped(handle);
+		}
+
+		/// <summary>
+		/// Put out the fire on the current player.
+		/// </summary>
+		public static void StopEntityFire(this Ped ped)
+		{
+			Function.Call(Hash.STOP_ENTITY_FIRE, ped.Handle);
+		}
+
+		/// <summary>
+		/// Make the ped stumble.
+		/// </summary>
+		public static void Stumble(this Ped ped, int durationMs)
+		{
+			ped.Euphoria.ArmsWindmillAdaptive.ResetArguments();
+
+			ped.Euphoria.ArmsWindmillAdaptive.AngSpeed = 6f;
+			ped.Euphoria.ArmsWindmillAdaptive.Amplitude = 1.5f;
+			ped.Euphoria.ArmsWindmillAdaptive.LeftElbowAngle = 0.1f;
+			ped.Euphoria.ArmsWindmillAdaptive.RightElbowAngle = 0.1f;
+			ped.Euphoria.ArmsWindmillAdaptive.DisableOnImpact = true;
+			ped.Euphoria.ArmsWindmillAdaptive.BendLeftElbow = true;
+			ped.Euphoria.ArmsWindmillAdaptive.BendRightElbow = true;
+
+			ped.Euphoria.ArmsWindmillAdaptive.Start(durationMs);
+
+			ped.Euphoria.ApplyImpulse.ResetArguments();
+			ped.Euphoria.ApplyImpulse.Impulse = ped.ForwardVector * -100;
+			ped.Euphoria.ApplyImpulse.Start(durationMs);
+
+			ped.Euphoria.BodyBalance.Start();
 		}
 	}
 }
