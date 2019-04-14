@@ -93,10 +93,13 @@ To blow the tires into your current game.
 * `take-weapon` - Takes the current weapon.
 * `wanted <level>` - Sets the wanted level to `<level>`, `wanted 0` clears your wanted level.
 * `exploding-bullets` - Enable exploding bullets for 10 seconds.
+* `exploding-punches` - Enable exploding punches for 10 seconds.
 * `drunk` - Make the player drunk for 10 seconds.
 * `very-drunk` - Make the player very drunk for 10 seconds.
 * `set-on-fire` - Set the player on fire.
 * `set-peds-on-fire` - Set other pedestrians on fire.
+* `make-peds-aggressive` - Make a number of peds aggressive.
+* `matrix-slam` - Perform a matrix slam.
 
 ## License
 

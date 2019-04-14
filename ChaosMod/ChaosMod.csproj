@@ -45,7 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChaosMod.cs" />
+    <Compile Include="Commands\Matrix.cs" />
+    <Compile Include="Commands\ReverseControls.cs" />
+    <Compile Include="Commands\ExplodingPunches.cs" />
     <Compile Include="Commands\MakeFireProof.cs" />
+    <Compile Include="Commands\MakePedsAggressive.cs" />
     <Compile Include="Commands\SetPedsOnFire.cs" />
     <Compile Include="Commands\SetOnFire.cs" />
     <Compile Include="Commands\CameraFreeze.cs" />
@@ -81,6 +85,8 @@
     <Compile Include="Commands\RandomizeWeather.cs" />
     <Compile Include="Commands\GiveWeapon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="KeyDown.cs" />
+    <Compile Include="Ticker.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

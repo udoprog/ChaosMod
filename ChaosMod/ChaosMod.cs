@@ -26,6 +26,7 @@ namespace ChaosMod
 		/// Timers currently running.
 		/// </summary>
 		private LinkedList<ITicker> tickers = new LinkedList<ITicker>();
+		private LinkedList<IKeyDown> keyDowns = new LinkedList<IKeyDown>();
 		private Dictionary<TickerId, ITicker> uniqueTickers = new Dictionary<TickerId, ITicker>();
 
 		public static WeaponHash[] ALL_WEAPONS = (WeaponHash[])Enum.GetValues(typeof(WeaponHash));
@@ -109,12 +110,16 @@ namespace ChaosMod
 			d.Add("take-all-weapons", new Commands.TakeAllWeapons());
 			d.Add("give-health", new Commands.GiveHealth());
 			d.Add("exploding-bullets", new Commands.ExplodingBullets());
+			d.Add("exploding-punches", new Commands.ExplodingPunches());
 			d.Add("drunk", new Commands.Drunk(false));
 			d.Add("very-drunk", new Commands.Drunk(true));
 			d.Add("camera-freeze", new Commands.CameraFreeze());
 			d.Add("set-on-fire", new Commands.SetOnFire());
 			d.Add("set-peds-on-fire", new Commands.SetPedsOnFire());
 			d.Add("make-fire-proof", new Commands.MakeFireProof());
+			d.Add("make-peds-aggressive", new Commands.MakePedsAggressive());
+			d.Add("reverse-controls", new Commands.ReverseControls());
+			d.Add("matrix-slam", new Commands.MatrixSlam());
 			return d;
 		}
 
@@ -123,6 +128,8 @@ namespace ChaosMod
 		/// </summary>
 		private void OnKeyDown(object sender, KeyEventArgs e)
 		{
+			HandleKeyDowns();
+
 			if (e.KeyCode == Keys.K)
 			{
 				var player = Game.Player.Character;
@@ -137,7 +144,7 @@ namespace ChaosMod
 			if (e.KeyCode == Keys.J)
 			{
 				var args = new List<String>();
-				COMMANDS["set-peds-on-fire"].Handle(this, "tester", args);
+				COMMANDS["matrix"].Handle(this, "tester", args);
 			}
 		}
 
@@ -149,7 +156,6 @@ namespace ChaosMod
 			HandleTickers();
 			HandleUniqueTickers();
 			HandleTextTimer();
-			HateGroup.Tick();
 			CheckQueue();
 		}
 
@@ -272,6 +278,14 @@ namespace ChaosMod
 		}
 
 		/// <summary>
+		/// Add a thing that handles ticks every frame.
+		/// </summary>
+		public void AddKeyDown(IKeyDown keyDown)
+		{
+			this.keyDowns.AddLast(keyDown);
+		}
+
+		/// <summary>
 		/// Add a ticker which there can only exist one of.
 		/// 
 		/// If the ticker exists, replaces it and returns false.
@@ -313,7 +327,28 @@ namespace ChaosMod
 				current = current.Next;
 			}
 		}
-		
+
+		/// <summary>
+		/// Handle calling tick on all spawned tickers.
+		/// </summary>
+		private void HandleKeyDowns()
+		{
+			var current = keyDowns.First;
+
+			while (current != null)
+			{
+				if (current.Value.KeyDown())
+				{
+					var prev = current;
+					current = current.Next;
+					keyDowns.Remove(prev);
+					continue;
+				}
+
+				current = current.Next;
+			}
+		}
+
 		/// <summary>
 		/// Handle calling tick on all unique tickers.
 		/// </summary>
@@ -805,28 +840,6 @@ namespace ChaosMod
 	}
 
 	/// <summary>
-	/// Identifier for a unique ticker.
-	/// </summary>
-	public enum TickerId
-	{
-		SetOnFire,
-		MakeFireProof,
-		SuperSpeed,
-		SuperJump,
-		Invincibility,
-	}
-
-	public interface ITicker
-	{
-		bool Tick();
-
-		/// <summary>
-		/// What does the ticker do.
-		/// </summary>
-		String What();
-	}
-
-	/// <summary>
 	/// Keeps track and updates the group that hates the current player.
 	/// </summary>
 	public class HateGroup
@@ -836,27 +849,10 @@ namespace ChaosMod
 			get;
 		}
 
-		private Ped knownCharacter;
-
 		public HateGroup()
 		{
-			this.GroupId = World.AddRelationshipGroup("hates-player");
-			this.knownCharacter = null;
-		}
-
-		public void Tick()
-		{
-			if (knownCharacter == Game.Player.Character)
-			{
-				return;
-			}
-
-			knownCharacter = Game.Player.Character;
-
-			if (knownCharacter != null)
-			{
-				World.SetRelationshipBetweenGroups(Relationship.Hate, this.GroupId, knownCharacter.RelationshipGroup);
-			}
+			GroupId = World.AddRelationshipGroup("hates-player");
+			World.SetRelationshipBetweenGroups(Relationship.Hate, Game.GenerateHash("PLAYER"), this.GroupId);
 		}
 	}
 }

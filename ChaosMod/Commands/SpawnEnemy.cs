@@ -51,17 +51,23 @@ namespace ChaosMod.Commands
 				var distance = mod.Rnd.Next(10, 20);
 
 				var ped = World.CreatePed(new Model(pedHash), player.Position.Around(distance));
-				ped.Task.ClearAllImmediately();
 				var weapon = ped.Weapons.Give(weaponHash, 0, true, true);
 				weapon.Ammo = weapon.MaxAmmo;
+	
 				ped.IsEnemy = true;
-				ped.Task.FightAgainst(player);
 				ped.RelationshipGroup = mod.HateGroup.GroupId;
+
+				ped.SetCombatAttributes(CombatAttributes.AlwaysFight, true);
+				ped.SetCombatAttributes(CombatAttributes.CanFightArmedPedsWhenNotArmed, true);
+
+				ped.Task.ClearAll();
+				ped.Task.FightAgainst(player);
+
 				ped.Detach();
 				ped.MarkAsNoLongerNeeded();
 
 				var blip = ped.AddBlip();
-				mod.AddTicker(new SpawnEnemyTicker(blip, ped));
+				mod.AddTicker(new EnemyBlipTicker(blip, ped));
 			}
 
 			if (amount == 1)
@@ -74,12 +80,12 @@ namespace ChaosMod.Commands
 		}
 	}
 
-	class SpawnEnemyTicker : ITicker
+	class EnemyBlipTicker : ITicker
 	{
 		private Blip blip;
 		private Ped ped;
 
-		public SpawnEnemyTicker(Blip blip, Ped ped)
+		public EnemyBlipTicker(Blip blip, Ped ped)
 		{
 			this.blip = blip;
 			this.ped = ped;

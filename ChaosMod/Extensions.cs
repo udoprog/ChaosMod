@@ -1,4 +1,5 @@
-﻿using GTA;
+﻿using System;
+using GTA;
 using GTA.Native;
 
 namespace ChaosMod
@@ -36,6 +37,14 @@ namespace ChaosMod
 		public static int StartScriptFire(GTA.Math.Vector3 pos, int maxChildren, bool isGasFire)
 		{
 			return Function.Call<int>(Hash.START_SCRIPT_FIRE, pos.X, pos.Y, pos.Z, maxChildren, isGasFire);
+		}
+
+		/// <summary>
+		/// Suppress shocking events next frame.
+		/// </summary>
+		public static void SuppressShockingEventsNextFrame()
+		{
+			Function.Call(Hash.SUPPRESS_SHOCKING_EVENTS_NEXT_FRAME);
 		}
 
 		/// <summary>
@@ -134,5 +143,38 @@ namespace ChaosMod
 
 			ped.Euphoria.BodyBalance.Start();
 		}
+
+		/// <summary>
+		/// Set flee attributes.
+		/// </summary>
+		public static void SetFleeAttributes(this Ped ped, int attributes, bool p2)
+		{
+			Function.Call(Hash.SET_PED_FLEE_ATTRIBUTES, ped.Handle, attributes, p2);
+		}
+
+		/// <summary>
+		/// Set combat attributes.
+		/// </summary>
+		public static void SetCombatAttributes(this Ped ped, CombatAttributes attributes, bool enabled)
+		{
+			Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES, ped.Handle, (int) attributes, enabled);
+		}
 	}
+
+	/// <summary>
+	/// Combat attributes that can be set.
+	/// </summary>
+	public enum CombatAttributes
+	{
+		CanUseCover = 0,
+		CanUseVehicles = 1,
+		CanDoDrivebys = 2,
+		CanLeaveVehicle = 3,
+		CanFightArmedPedsWhenNotArmed = 5,
+		CanTauntInVehicle = 20,
+		AlwaysFight = 46,
+		IgnoreTrafficWhenDriving = 52,
+		FreezeMovement = 292,
+		PlayerCanUseFiringWeapons = 1424
+	};
 }
