@@ -100,6 +100,8 @@ To blow the tires into your current game.
 * `set-peds-on-fire` - Set other pedestrians on fire.
 * `make-peds-aggressive` - Make a number of peds aggressive.
 * `matrix-slam` - Perform a matrix slam.
+* `disable-control <id>` - Display the specified control.
+* `mod-vehicle <id>` - Modify the current vehicle.
 
 ## License
 
