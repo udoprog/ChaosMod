@@ -161,6 +161,84 @@ namespace ChaosMod
 		}
 	}
 
+	public static class VehicleExtension
+	{
+		public static VehicleNeonLight[] NEON_LIGHTS = (VehicleNeonLight[])Enum.GetValues(typeof(VehicleNeonLight));
+		public static VehicleColor[] VEHICLE_COLORS = (VehicleColor[])Enum.GetValues(typeof(VehicleColor));
+
+		/// <summary>
+		/// Randomize lights on vehicle.
+		/// </summary>
+		public static void RandomizeLightsOn(this Vehicle vehicle, Random rnd)
+		{
+			foreach (var neon in NEON_LIGHTS)
+			{
+				var on = false;
+
+				if (rnd.Next(0, 2) == 1)
+				{
+					on = true;
+				}
+
+				vehicle.SetNeonLightsOn(neon, on);
+			}
+		}
+
+		/// <summary>
+		/// Randomize all vehicle colors.
+		/// </summary>
+		public static void RandomizeColors(this Vehicle vehicle, Random rnd)
+		{
+			if (rnd.NextBoolean())
+			{
+				vehicle.CustomPrimaryColor = rnd.NextColor();
+			}
+			else
+			{
+				vehicle.ClearCustomPrimaryColor();
+				vehicle.PrimaryColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
+			}
+
+			if (rnd.NextBoolean())
+			{
+				vehicle.CustomSecondaryColor = rnd.NextColor();
+			} else
+			{
+				vehicle.ClearCustomSecondaryColor();
+				vehicle.SecondaryColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
+			}
+
+			vehicle.NeonLightsColor = rnd.NextColor();
+			vehicle.TireSmokeColor = rnd.NextColor();
+			vehicle.RimColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
+			// this causes the game to crash.
+			// vehicle.TrimColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
+			vehicle.PearlescentColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
+		}
+	}
+
+	public static class RandomExtension
+	{
+		/// <summary>
+		/// Get next random boolean.
+		/// </summary>
+		public static bool NextBoolean(this Random rnd)
+		{
+			return rnd.Next(0, 2) == 0;
+		}
+
+		/// <summary>
+		/// Generate a random color.
+		/// </summary>
+		public static System.Drawing.Color NextColor(this Random rnd)
+		{
+			var r = rnd.Next(0, 256);
+			var g = rnd.Next(0, 256);
+			var b = rnd.Next(0, 256);
+			return System.Drawing.Color.FromArgb(r, g, b);
+		}
+	}
+
 	/// <summary>
 	/// Combat attributes that can be set.
 	/// </summary>

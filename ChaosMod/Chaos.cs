@@ -147,8 +147,8 @@ namespace ChaosMod
 			if (e.KeyCode == Keys.J)
 			{
 				var args = new List<String>();
-				// args.Add("high-tier");
-				COMMANDS["super-boost"].Handle(this, "tester", args);
+				args.Add("high-tier");
+				COMMANDS["mod-vehicle"].Handle(this, "tester", args);
 			}
 		}
 
@@ -397,17 +397,6 @@ namespace ChaosMod
 			}
 
 			// TODO
-		}
-
-		/// <summary>
-		/// Generate a random color.
-		/// </summary>
-		public Color RandomColor()
-		{
-			var r = Rnd.Next(0, 256);
-			var g = Rnd.Next(0, 256);
-			var b = Rnd.Next(0, 256);
-			return Color.FromArgb(r, g, b);
 		}
 
 		/// <summary>

@@ -68,6 +68,27 @@ namespace ChaosMod.Commands
 
 			vehicle.InstallModKit();
 
+			vehicle.RandomizeColors(mod.Rnd);
+			vehicle.RandomizeLightsOn(mod.Rnd);
+
+			vehicle.ToggleMod(VehicleToggleMod.TireSmoke, mod.Rnd.NextBoolean());
+			vehicle.ToggleMod(VehicleToggleMod.XenonHeadlights, mod.Rnd.NextBoolean());
+
+			switch (id)
+			{
+				case ModId.MidTier:
+					// 50% chance of getting a turbo.
+					vehicle.ToggleMod(VehicleToggleMod.Turbo, mod.Rnd.NextBoolean());
+					break;
+				case ModId.HighTier:
+					// 75% chance of getting a turbo.
+					vehicle.ToggleMod(VehicleToggleMod.Turbo, mod.Rnd.Next(0, 4) != 0);
+					break;
+				default:
+					vehicle.ToggleMod(VehicleToggleMod.Turbo, false);
+					break;
+			}
+
 			foreach (var m in ALL_MODS)
 			{
 				var count = vehicle.GetModCount(VehicleMod.FrontBumper);
@@ -78,7 +99,7 @@ namespace ChaosMod.Commands
 				}
 
 				var bottom = 0;
-				var ceiling = count;
+				var ceiling = count + 1;
 
 				switch (id)
 				{
@@ -99,7 +120,18 @@ namespace ChaosMod.Commands
 				}
 
 				var index = mod.Rnd.Next(bottom, ceiling);
-				vehicle.SetMod(m, index, true);
+
+				var existing = vehicle.GetMod(m);
+
+				if (existing >= 0)
+				{
+					vehicle.SetMod(m, existing, false);
+				}
+
+				if (index > 0)
+				{
+					vehicle.SetMod(m, index - 1, true);
+				}
 			}
 
 			mod.ShowText($"{from} modded your vehicle ({id})!");

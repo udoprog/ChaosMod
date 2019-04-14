@@ -52,8 +52,7 @@ namespace ChaosMod.Commands
 				}
 			}
 
-			vehicle.CustomPrimaryColor = mod.RandomColor();
-			vehicle.CustomSecondaryColor = mod.RandomColor();
+			vehicle.RandomizeColors(mod.Rnd);
 			mod.ShowText($"{from} chnaged your vehicle randomly!");
 		}
 	}

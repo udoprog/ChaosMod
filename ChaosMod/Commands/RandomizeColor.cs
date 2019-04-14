@@ -32,9 +32,7 @@ namespace ChaosMod.Commands
 				vehicle.ColorCombination = mod.Rnd.Next(0, count);
 			}
 
-			vehicle.CustomPrimaryColor = mod.RandomColor();
-			vehicle.CustomSecondaryColor = mod.RandomColor();
-
+			vehicle.RandomizeColors(mod.Rnd);
 			mod.ShowText($"{from} scrambled your vehicle colors!");
 		}
 	}
