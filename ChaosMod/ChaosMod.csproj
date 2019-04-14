@@ -44,7 +44,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SlowDown.cs" />
+    <Compile Include="Commands\ModVehicle.cs" />
+    <Compile Include="Commands\CloseParachute.cs" />
+    <Compile Include="Commands\DisableControl.cs" />
     <Compile Include="Chaos.cs" />
     <Compile Include="Commands\Matrix.cs" />
     <Compile Include="Commands\ReverseControls.cs" />

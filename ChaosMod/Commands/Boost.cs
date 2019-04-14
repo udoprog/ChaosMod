@@ -30,16 +30,16 @@ namespace ChaosMod.Commands
 			}
 
 			float time = 1f;
-			float factor = 1f;
+			float factor = 2f;
 			var wheelsOnGround = true;
 
 			if (super)
 			{
-				time = 5f;
+				time = 2f;
 				factor = 10f;
-				wheelsOnGround = false;
+				wheelsOnGround = true;
 
-				if (mod.AddUniqueTicker(TickerId.Invincibility, new InvincibilityTicker(time, player)))
+				if (mod.AddUniqueTicker(TickerId.Invincibility, new InvincibilityTicker(10f, player)))
 				{
 					player.IsInvincible = true;
 				}
@@ -68,7 +68,7 @@ namespace ChaosMod.Commands
 			/// </summary>
 			bool wheelsOnGround;
 
-			public BoostTicker(Ped player, float factor, float timer, bool wheelsOnGround)
+			public BoostTicker(Ped player, float timer, float factor, bool wheelsOnGround)
 			{
 				this.player = player;
 				this.timer = timer;

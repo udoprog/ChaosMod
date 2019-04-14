@@ -120,6 +120,9 @@ namespace ChaosMod
 			d.Add("make-peds-aggressive", new Commands.MakePedsAggressive());
 			d.Add("reverse-controls", new Commands.ReverseControls());
 			d.Add("matrix-slam", new Commands.MatrixSlam());
+			d.Add("disable-control", new Commands.DisableControl());
+			d.Add("close-parachute", new Commands.CloseParachute());
+			d.Add("mod-vehicle", new Commands.ModVehicle());
 			return d;
 		}
 
@@ -144,7 +147,8 @@ namespace ChaosMod
 			if (e.KeyCode == Keys.J)
 			{
 				var args = new List<String>();
-				COMMANDS["matrix"].Handle(this, "tester", args);
+				// args.Add("high-tier");
+				COMMANDS["super-boost"].Handle(this, "tester", args);
 			}
 		}
 
