@@ -10,10 +10,14 @@ The bot that handles this is [setmod].
 [`gtav` setmod]: https://github.com/udoprog/setmod#gtav
 [setmod]: https://github.com/udoprog/setmod
 
-## Dependencies
+## Installation
+
+These need to be installed to run `ChaosMod`:
 
 * [ScriptHookV.NET](https://www.gta5-mods.com/tools/scripthookv-net)
 * [NativeUI](https://github.com/Guad/NativeUI/releases/)
+
+After this, drop `ChaosMod-<version>.dll` into your scripts folder.
 
 ## Building
 
