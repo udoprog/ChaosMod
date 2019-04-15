@@ -144,12 +144,12 @@ namespace ChaosMod
 			}
 
 			// for testing cheats
-			if (e.KeyCode == Keys.J)
+			/*if (e.KeyCode == Keys.J)
 			{
 				var args = new List<String>();
 				args.Add("high-tier");
 				COMMANDS["mod-vehicle"].Handle(this, "tester", args);
-			}
+			}*/
 		}
 
 		/// <summary>

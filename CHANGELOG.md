@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/udoprog/setmod/compare/1.1.0...HEAD
 
+## [1.1.1]
+
+### Changed
+- A couple of bug fixes related to crashes and vehicle modifications.
+
+[1.1.1]: https://github.com/udoprog/setmod/compare/1.1.0...1.1.1
+
 ## [1.1.0]
 
 ### Changed
