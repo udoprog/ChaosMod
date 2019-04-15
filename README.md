@@ -19,6 +19,10 @@ These need to be installed to run `ChaosMod`:
 
 After this, drop `ChaosMod-<version>.dll` into your scripts folder.
 
+You can either download this from [releases] or build it yourself (see below).
+
+[releases]: https://github.com/udoprog/ChaosMod/releases
+
 ## Building
 
 Open up the project in Visual Studio 2017 and Build.
