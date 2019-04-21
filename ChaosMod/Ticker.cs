@@ -17,6 +17,7 @@ namespace ChaosMod
 		Invincibility,
 		ExplodingPunches,
 		ExplodingBullets,
+		SlowDownTime,
 	}
 
 	public interface ITicker

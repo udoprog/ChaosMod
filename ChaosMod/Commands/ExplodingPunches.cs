@@ -41,7 +41,7 @@ namespace ChaosMod.Commands
 
 		public String What()
 		{
-			return "Exploding Punches";
+			return "Exploding punches";
 		}
 	}
 }

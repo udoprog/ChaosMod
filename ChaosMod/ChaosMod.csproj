@@ -44,6 +44,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\SlowDownTime.cs" />
+    <Compile Include="Commands\Eject.cs" />
     <Compile Include="Commands\Levitate.cs" />
     <Compile Include="Commands\ModVehicle.cs" />
     <Compile Include="Commands\CloseParachute.cs" />

@@ -20,10 +20,20 @@ namespace ChaosMod.Commands
 				return;
 			}
 
+			if (!vehicle.CanTiresBurst)
+			{
+				vehicle.CanTiresBurst = true;
+			}
+
 			vehicle.BurstTire(0);
 			vehicle.BurstTire(1);
+			vehicle.BurstTire(2);
+			vehicle.BurstTire(3);
 			vehicle.BurstTire(4);
 			vehicle.BurstTire(5);
+			vehicle.BurstTire(45);
+			vehicle.BurstTire(46);
+
 			mod.ShowText($"{from} blew out your tires!");
 		}
 	}

@@ -125,6 +125,8 @@ namespace ChaosMod
 			d.Add("close-parachute", new Commands.CloseParachute());
 			d.Add("mod-vehicle", new Commands.ModVehicle());
 			d.Add("levitate", new Commands.Levitate());
+			d.Add("eject", new Commands.Eject());
+			d.Add("slow-down-time", new Commands.SlowDownTime());
 			return d;
 		}
 
@@ -150,6 +152,13 @@ namespace ChaosMod
 			{
 				var args = new List<String>();
 				COMMANDS["levitate"].Handle(this, "tester", args);
+			}
+
+			// for testing cheats
+			if (e.KeyCode == Keys.H)
+			{
+				var args = new List<String>();
+				COMMANDS["slow-down-time"].Handle(this, "tester", args);
 			}
 		}
 
@@ -203,7 +212,8 @@ namespace ChaosMod
 		/// </summary>
 		public void ShowText(String text)
 		{
-			ShowText(text, 5f);
+			UI.Notify(text);
+			// ShowText(text, 5f);
 		}
 
 		/// <summary>
@@ -211,9 +221,7 @@ namespace ChaosMod
 		/// </summary>
 		public void ShowText(String text, float timer)
 		{
-			this.textTimer = timer;
-			this.text.Caption = text;
-			this.textContainer.Enabled = true;
+			UI.Notify(text);
 		}
 
 		private void HandleTextTimer()
