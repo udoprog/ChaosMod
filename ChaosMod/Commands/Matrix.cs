@@ -64,6 +64,19 @@ namespace ChaosMod.Commands
 							continue;
 						}
 
+						if (entity is Ped)
+						{
+							var ped = (Ped)entity;
+
+							switch (ped.GetRelationshipWithPed(player))
+							{
+								case Relationship.Like:
+									continue;
+								default:
+									break;
+							}
+						}
+
 						entity.ApplyForce(fa, ra);
 					}
 
@@ -88,7 +101,7 @@ namespace ChaosMod.Commands
 
 			public String What()
 			{
-				return "Matrix Mode";
+				return "Matrix slam";
 			}
 		}
 	}

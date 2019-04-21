@@ -29,7 +29,7 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			float time = 1f;
+			float time = 0.5f;
 			float factor = 2f;
 			var wheelsOnGround = true;
 

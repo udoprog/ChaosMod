@@ -110,6 +110,7 @@ To blow the tires into your current game.
 * `matrix-slam` - Perform a matrix slam.
 * `disable-control <id>` - Display the specified control.
 * `mod-vehicle <id>` - Modify the current vehicle.
+* `levitate` - Levitate the current vehicle or character.
 
 ## License
 

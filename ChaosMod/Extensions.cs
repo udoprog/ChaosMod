@@ -159,6 +159,22 @@ namespace ChaosMod
 		{
 			Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES, ped.Handle, (int) attributes, enabled);
 		}
+
+		/// <summary>
+		/// Set the ped as falling from a great height.
+		/// </summary>
+		public static void SetHighFallTask(this Ped ped)
+		{
+			Function.Call(Hash.SET_HIGH_FALL_TASK, ped.Handle, 0, 0, 0);
+		}
+
+		/// <summary>
+		/// Set the ped as falling from a great height.
+		/// </summary>
+		public static void SetPedToRagdoll(this Ped ped, int timeMillis, int standupMillis, int ragdollType)
+		{
+			Function.Call(Hash.SET_PED_TO_RAGDOLL, ped.Handle, timeMillis, standupMillis, ragdollType, false, false, false);
+		}
 	}
 
 	public static class VehicleExtension
@@ -236,6 +252,17 @@ namespace ChaosMod
 			var g = rnd.Next(0, 256);
 			var b = rnd.Next(0, 256);
 			return System.Drawing.Color.FromArgb(r, g, b);
+		}
+
+		/// <summary>
+		/// Generate a random color.
+		/// </summary>
+		public static GTA.Math.Vector3 RandomVector3(this Random rnd, float magnitude)
+		{
+			var x = (float)rnd.NextDouble() - 0.5f;
+			var y = (float)rnd.NextDouble() - 0.5f;
+			var z = (float)rnd.NextDouble() - 0.5f;
+			return new GTA.Math.Vector3(x, y, z).Normalized * magnitude;
 		}
 	}
 

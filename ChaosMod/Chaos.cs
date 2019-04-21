@@ -30,7 +30,8 @@ namespace ChaosMod
 		private Dictionary<TickerId, ITicker> uniqueTickers = new Dictionary<TickerId, ITicker>();
 
 		public static WeaponHash[] ALL_WEAPONS = (WeaponHash[])Enum.GetValues(typeof(WeaponHash));
-		public static VehicleHash[] ALL_VEHICLES = (VehicleHash[])Enum.GetValues(typeof(VehicleHash));
+		public static List<VehicleHash> ALL_VEHICLES = AllVehicles();
+		public static Dictionary<String, VehicleHash> ALL_VEHICLES_BY_ID = AllVehiclesById();
 
 		static List<VehicleHash[]> SLOW_CARS = SlowCars();
 		static List<VehicleHash[]> NORMAL_CARS = NormalCars();
@@ -123,6 +124,7 @@ namespace ChaosMod
 			d.Add("disable-control", new Commands.DisableControl());
 			d.Add("close-parachute", new Commands.CloseParachute());
 			d.Add("mod-vehicle", new Commands.ModVehicle());
+			d.Add("levitate", new Commands.Levitate());
 			return d;
 		}
 
@@ -144,12 +146,11 @@ namespace ChaosMod
 			}
 
 			// for testing cheats
-			/*if (e.KeyCode == Keys.J)
+			if (e.KeyCode == Keys.J)
 			{
 				var args = new List<String>();
-				args.Add("high-tier");
-				COMMANDS["mod-vehicle"].Handle(this, "tester", args);
-			}*/
+				COMMANDS["levitate"].Handle(this, "tester", args);
+			}
 		}
 
 		/// <summary>
@@ -456,19 +457,22 @@ namespace ChaosMod
 					return PickRandomCar(BIKES);
 				case "pedalbike":
 					return PickRandomCar(PEDAL_BIKES);
-				case "gauntlet":
-					return GAUNTLETS[Rnd.Next(0, GAUNTLETS.Length)];
 				case "blimp":
 					return BLIMPS[Rnd.Next(0, BLIMPS.Length)];
 				case "jet-ski":
 					return JET_SKIS[Rnd.Next(0, JET_SKIS.Length)];
 				case "tank":
 					return TANKS[Rnd.Next(0, TANKS.Length)];
-				case "hydra":
-					return VehicleHash.Hydra;
 				case "sub":
 					return SUBMERSIBLE[Rnd.Next(0, SUBMERSIBLE.Length)];
 				default:
+					VehicleHash byId = VehicleHash.Adder;
+
+					// Match by ID.
+					if (ALL_VEHICLES_BY_ID.TryGetValue(vehicle, out byId)) {
+						return byId;
+					}
+
 					return RandomVehicle();
 			}
 		}
@@ -479,7 +483,7 @@ namespace ChaosMod
 		/// <returns></returns>
 		VehicleHash RandomVehicle()
 		{
-			return ALL_VEHICLES[Rnd.Next(0, ALL_VEHICLES.Length)];
+			return ALL_VEHICLES[Rnd.Next(0, ALL_VEHICLES.Count)];
 		}
 
 		VehicleHash? PickRandomCar(List<VehicleHash[]> hashes)
@@ -633,7 +637,7 @@ namespace ChaosMod
 			});
 			cars.Add(new VehicleHash[] { VehicleHash.Buffalo, VehicleHash.Buffalo2, VehicleHash.Buffalo3, });
 			cars.Add(new VehicleHash[] { VehicleHash.Osiris, });
-			cars.Add(GAUNTLETS);
+			cars.Add(new VehicleHash[] { VehicleHash.Gauntlet, });
 			return cars;
 		}
 
@@ -663,6 +667,31 @@ namespace ChaosMod
 			});
 
 			return cars;
+		}
+
+		/// <summary>
+		/// Get a list of all vehicles.
+		/// </summary>
+		static List<VehicleHash> AllVehicles()
+		{
+			var array = (VehicleHash[])Enum.GetValues(typeof(VehicleHash));
+			return array.ToList();
+		}
+
+		/// <summary>
+		/// Get a list of all vehicles.
+		/// </summary>
+		static Dictionary<String, VehicleHash> AllVehiclesById()
+		{
+			var array = (VehicleHash[])Enum.GetValues(typeof(VehicleHash));
+			var d = new Dictionary<String, VehicleHash>();
+
+			foreach (var v in array)
+			{
+				d[v.ToString().ToLower()] = v;
+			}
+
+			return d;
 		}
 
 		static List<VehicleHash[]> Bikes()
@@ -824,12 +853,6 @@ namespace ChaosMod
 
 			return d;
 		}
-
-		static VehicleHash[] GAUNTLETS = new VehicleHash[]
-		{
-			VehicleHash.Gauntlet,
-			VehicleHash.Gauntlet2,
-		};
 	}
 
 	/// <summary>
