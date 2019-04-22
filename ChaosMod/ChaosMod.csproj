@@ -45,6 +45,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\Superman.cs" />
     <Compile Include="Commands\Kill.cs" />
     <Compile Include="Commands\FuelLeakage.cs" />
     <Compile Include="Commands\FireAmmo.cs" />

@@ -14,7 +14,7 @@ namespace ChaosMod.Commands
 			var duration = rest.GetEnumerator().NextFloatOrDefault(30f);
 			var timer = mod.Timer("Exploding Punches", duration);
 			mod.AddUniqueTicker(TickerId.ExplodingPunches, new ExplodingPunchesTicker(timer));
-			mod.ShowText($"{from} enabled exploding punches!");
+			mod.ShowText($"{from} enabled exploding punches for {duration} seconds!");
 		}
 	}
 

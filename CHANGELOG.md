@@ -6,7 +6,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/udoprog/setmod/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/udoprog/setmod/compare/1.2.0...HEAD
+
+## [1.2.0]
+
+### Changed
+- `boost`, and `superboost` have been nerfed a bit to give the player more control.
+
+### Added
+- A menu that can be opened to run commands (`J` or `K`).
+- Progress bars for active effects.
+- Added commands:
+  - `eject` to eject out of the current vehicle.
+  - `slow-down-time` to slow down the game time.
+  - `levitate` to cause the player and its vehicle to levitate.
+  - `levitate-entities` to cause other entities and their vehicles to levitate.
+  - `fire-ammo` to give the player fire ammo.
+  - `fuel-leakage` to cause the current vehicle to slowly but surely run out of fuel.
+  - `superman` (internal only) enables a couple of superman-like effects.
+
+[1.2.0]: https://github.com/udoprog/setmod/compare/1.1.1...1.2.0
 
 ## [1.1.1]
 

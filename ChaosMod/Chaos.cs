@@ -162,6 +162,7 @@ namespace ChaosMod
 			d.Add("levitate-entities", new Commands.LevitateEntities());
 			d.Add("fire-ammo", new Commands.FireAmmo());
 			d.Add("fuel-leakage", new Commands.FuelLeakage());
+			d.Add("superman", new Commands.Superman());
 			return d;
 		}
 
@@ -277,24 +278,33 @@ namespace ChaosMod
 				var id = parts[1];
 				var name = parts[2];
 
-				Command command = null;
+				Call(from, id, name, parts.Skip(3));
+			}
+		}
 
-				if (!COMMANDS.TryGetValue(name, out command))
-				{
-					return;
-				}
+		/// <summary>
+		/// Call the given command programmatically.
+		/// </summary>
+		public void Call(String from, String id, String name, IEnumerable<String> rest)
+		{
+			Command command = null;
 
-				try
-				{
-					command.Handle(this, from, parts.Skip(3));
-				} catch(Exception e)
-				{
+			if (!COMMANDS.TryGetValue(name, out command))
+			{
+				return;
+			}
+
+			try
+			{
+				command.Handle(this, from, rest);
+			}
+			catch (Exception e)
+			{
 #if DEBUG
-					UI.Notify($"something went wrong\nuser: {from}\nid: {id}\nname: {name}\nException: {e}");
+				UI.Notify($"something went wrong\nuser: {from}\nid: {id}\nname: {name}\nException: {e}");
 #else
-					UI.Notify($"something went wrong\nuser: {from}\nid: {id}\nname: {name}");
+				UI.Notify($"something went wrong\nuser: {from}\nid: {id}\nname: {name}");
 #endif
-				}
 			}
 		}
 
