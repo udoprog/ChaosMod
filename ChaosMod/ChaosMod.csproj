@@ -31,7 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NativeUI">
+    <Reference Include="NativeUI, Version=1.8.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\NativeUI.dll</HintPath>
     </Reference>
     <Reference Include="ScriptHookVDotNet2, Version=2.10.9.0, Culture=neutral, processorArchitecture=AMD64">
@@ -44,6 +45,10 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\Kill.cs" />
+    <Compile Include="Commands\FuelLeakage.cs" />
+    <Compile Include="Commands\FireAmmo.cs" />
+    <Compile Include="Commands\LevitateEntities.cs" />
     <Compile Include="Commands\SlowDownTime.cs" />
     <Compile Include="Commands\Eject.cs" />
     <Compile Include="Commands\Levitate.cs" />
@@ -52,13 +57,11 @@
     <Compile Include="Commands\DisableControl.cs" />
     <Compile Include="Chaos.cs" />
     <Compile Include="Commands\Matrix.cs" />
-    <Compile Include="Commands\ReverseControls.cs" />
     <Compile Include="Commands\ExplodingPunches.cs" />
     <Compile Include="Commands\MakeFireProof.cs" />
     <Compile Include="Commands\MakePedsAggressive.cs" />
     <Compile Include="Commands\SetPedsOnFire.cs" />
     <Compile Include="Commands\SetOnFire.cs" />
-    <Compile Include="Commands\CameraFreeze.cs" />
     <Compile Include="Commands\Drunk.cs" />
     <Compile Include="Commands\ExplodingBullets.cs" />
     <Compile Include="Extensions.cs" />

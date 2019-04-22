@@ -9,57 +9,32 @@ namespace ChaosMod.Commands
 	/// </summary>
 	public class SuperSwim : Command
 	{
-		private int stacked = 0;
-
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
-			var r = rest.GetEnumerator();
-
-			if (!r.MoveNext())
-			{
-				return;
-			}
-
-			var time = float.Parse(r.Current);
-			stacked += 1;
-			mod.AddTicker(new SuperSwimTicker(time, this, 10f));
-			mod.ShowText($"{from} gave you with super swim for {time} seconds");
+			var duration = rest.GetEnumerator().NextFloatOrDefault(30f);
+			var timer = mod.Timer("Super Swim", duration);
+			mod.AddUniqueTicker(TickerId.SuperSwim, new SuperSwimTicker(timer, 10f));
+			mod.ShowText($"{from} gave you with super swim for {duration} seconds");
 		}
 
 		class SuperSwimTicker : ITicker
 		{
-			private float timer;
-			private SuperSwim parent;
+			private Timer timer;
 
-			public SuperSwimTicker(float timer, SuperSwim parent, float multiplier)
+			public SuperSwimTicker(Timer timer, float multiplier)
 			{
 				this.timer = timer;
-				this.parent = parent;
-				Game.Player.SetSwimSpeedMultThisFrame(multiplier);
 			}
 
-			public bool Tick()
+			public override void Stop()
 			{
-				timer -= Game.LastFrameTime;
-
-				if (timer > 0)
-				{
-					return false;
-				}
-
-				parent.stacked -= 1;
-
-				if (parent.stacked == 0)
-				{
-					Game.Player.SetSwimSpeedMultThisFrame(1f);
-				}
-
-				return true;
+				timer.Stop();
 			}
 
-			public String What()
+			public override bool Tick()
 			{
-				return "Super Swim";
+				Game.Player.SetSwimSpeedMultThisFrame(1f);
+				return timer.Tick();
 			}
 		}
 	}

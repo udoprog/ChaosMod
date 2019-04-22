@@ -21,7 +21,8 @@ namespace ChaosMod.Commands
 
 			var entities = World.GetNearbyEntities(player.Position, 100f);
 
-			var controller = new MatrixController(entities, player);
+			var timer = mod.AnonymousTimer(2f);
+			var controller = new MatrixController(entities, player, timer);
 
 			mod.AddTicker(controller);
 			mod.ShowText($"{from} performed a matrix slam!");
@@ -29,30 +30,34 @@ namespace ChaosMod.Commands
 
 		class MatrixController : ITicker
 		{
-			private float timer;
 			private Entity[] entities;
 			private Ped player;
+			private Timer timer;
 
-			public MatrixController(Entity[] entities, Ped player)
+			public MatrixController(Entity[] entities, Ped player, Timer timer)
 			{
-				this.timer = 0;
 				this.entities = entities;
 				this.player = player;
+				this.timer = timer;
 			}
 
-			public bool Tick()
+			public override void Stop()
+			{
+				timer.Stop();
+			}
+
+			public override bool Tick()
 			{
 				var delta = Game.LastFrameTime;
-				timer += Game.LastFrameTime;
 
 				var vehicle = player.CurrentVehicle;
 
-				if (timer > 2)
+				if (timer.Tick())
 				{
 					return true;
 				}
 
-				if (timer < 1)
+				if (timer.Remaining > 1)
 				{
 					var fa = GTA.Math.Vector3.WorldUp * 100f * delta;
 					var ra = GTA.Math.Vector3.WorldNorth * 10f;
@@ -97,11 +102,6 @@ namespace ChaosMod.Commands
 				}
 
 				return false;
-			}
-
-			public String What()
-			{
-				return "Matrix slam";
 			}
 		}
 	}

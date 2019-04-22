@@ -12,7 +12,9 @@ namespace ChaosMod.Commands
 	{
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
-			if (mod.AddUniqueTicker(TickerId.SlowDownTime, new SlowDownTimeTicker(5f)))
+			var timer = mod.Timer("Time Slowdown", 5f);
+
+			if (mod.AddUniqueTicker(TickerId.SlowDownTime, new SlowDownTimeTicker(timer)))
 			{
 				Function.Call(Hash.SET_TIME_SCALE, 0.25f);
 			}
@@ -23,30 +25,27 @@ namespace ChaosMod.Commands
 
 	class SlowDownTimeTicker : ITicker
 	{
-		float timer;
+		Timer timer;
 
-		public SlowDownTimeTicker(float timer)
+		public SlowDownTimeTicker(Timer timer)
 		{
 			this.timer = timer;
 		}
 
-		public bool Tick()
+		public override void Stop()
 		{
-			var delta = Game.LastFrameTime;
-			timer -= delta;
+			timer.Stop();
+		}
 
-			if (timer > 0)
+		public override bool Tick()
+		{
+			if (!timer.Tick())
 			{
 				return false;
 			}
 
 			Function.Call(Hash.SET_TIME_SCALE, 1.0f);
 			return true;
-		}
-
-		public String What()
-		{
-			return "Time slowdown";
 		}
 	}
 }

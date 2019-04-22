@@ -51,7 +51,8 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			mod.AddUniqueTicker(TickerId.SuppressShocking, new SuppressShockingTicker(30f));
+			var timer = mod.AnonymousTimer(30f);
+			mod.AddUniqueTicker(TickerId.SuppressShocking, new SuppressShockingTicker(timer));
 			mod.ShowText($"{from} set {count} pedestrians on you!");
 		}
 	}

@@ -38,48 +38,40 @@ namespace ChaosMod.Commands
 					throw new Exception($"bad disable-control id `{id}`");
 			}
 
-			mod.AddTicker(new Ticker(10, control, what));
+			var timer = mod.Timer($"Disabled {what}", 10f);
+			mod.AddTicker(new DisableControlTicker(timer, control));
 			mod.ShowText($"{from} disabled the {what} control!");
 		}
 
 		/// <summary>
 		/// Disable the specified control for a given time.
 		/// </summary>
-		class Ticker : ITicker
+		class DisableControlTicker : ITicker
 		{
-			private float timer;
+			private Timer timer;
 			private DisabledControl control;
-			private String what;
 
-			public Ticker(float timer, DisabledControl control, String what)
+			public DisableControlTicker(Timer timer, DisabledControl control)
 			{
 				this.timer = timer;
 				this.control = control;
-				this.what = what;
 			}
 
-			public bool Tick()
+			public override void Stop()
 			{
-				timer -= Game.LastFrameTime;
+				timer.Stop();
+			}
 
-				if (timer > 0)
+			public override bool Tick()
+			{
+				switch (control)
 				{
-					switch (control)
-					{
-						case DisabledControl.Steering:
-							Game.DisableControlThisFrame(0, Control.VehicleMoveLeftRight);
-							break;
-					}
-
-					return false;
+					case DisabledControl.Steering:
+						Game.DisableControlThisFrame(0, Control.VehicleMoveLeftRight);
+						break;
 				}
 
-				return true;
-			}
-
-			public String What()
-			{
-				return $"Disabling of {what}";
+				return timer.Tick();
 			}
 		}
 	}

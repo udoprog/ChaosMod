@@ -12,47 +12,37 @@ namespace ChaosMod.Commands
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
 			var r = rest.GetEnumerator();
+			var duration = rest.GetEnumerator().NextFloatOrDefault(30f);
 
-			if (!r.MoveNext())
-			{
-				return;
-			}
-
-			var time = float.Parse(r.Current);
 			var player = Game.Player;
 
-			mod.AddUniqueTicker(TickerId.SuperJump, new SuperJumpTicker(time, player));
-			mod.ShowText($"{from} gave you with super jump for {time} seconds");
+			var timer = mod.Timer("Super Jump", duration);
+
+			mod.AddUniqueTicker(TickerId.SuperJump, new SuperJumpTicker(timer, player));
+			mod.ShowText($"{from} gave you with super jump for {duration} seconds");
 		}
 	}
 
 	class SuperJumpTicker : ITicker
 	{
-		private float timer;
+		private Timer timer;
 		private Player player;
 
-		public SuperJumpTicker(float timer, Player player)
+		public SuperJumpTicker(Timer timer, Player player)
 		{
 			this.timer = timer;
 			this.player = player;
 		}
 
-		public bool Tick()
+		public override void Stop()
 		{
-			var delta = Game.LastFrameTime;
-			timer -= delta;
-			if (timer <= 0)
-			{
-				return true;
-			}
-
-			player.SetSuperJumpThisFrame();
-			return false;
+			timer.Stop();
 		}
 
-		public String What()
+		public override bool Tick()
 		{
-			return "Super Jump";
+			player.SetSuperJumpThisFrame();
+			return timer.Tick();
 		}
 	}
 }

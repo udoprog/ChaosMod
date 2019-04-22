@@ -9,6 +9,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using NativeUI;
 
 namespace ChaosMod
 {
@@ -19,9 +20,6 @@ namespace ChaosMod
 		private State state;
 		private EndPoint epFrom = new IPEndPoint(IPAddress.Any, 0);
 		private AsyncCallback recv = null;
-		private UIText text;
-		private UIContainer textContainer;
-		private float textTimer = 0.0f;
 		/// <summary>
 		/// Timers currently running.
 		/// </summary>
@@ -41,6 +39,18 @@ namespace ChaosMod
 		static Dictionary<String, WeaponHash[]> WEAPONS = Weapons();
 		static Dictionary<String, Command> COMMANDS = Commands();
 
+		/// <summary>
+		/// Currently active timers.
+		/// </summary>
+		private TimerBarPool timers;
+		/// <summary>
+		/// Menu to manually trigger commands.
+		/// </summary>
+		private UIMenu menu;
+
+		/// <summary>
+		/// Hate group for the current player.
+		/// </summary>
 		public HateGroup HateGroup
 		{
 			get;
@@ -56,9 +66,11 @@ namespace ChaosMod
 
 		public Chaos()
 		{
-			SetupUiElements();
+			timers = new TimerBarPool();
+			menu = BuildMenu();
 
-			this.Tick += (o, e) => textContainer.Draw();
+			this.Tick += (o, e) => timers.Draw();
+			this.Tick += (o, e) => menu.Draw();
 			this.Tick += OnTick;
 			this.KeyDown += OnKeyDown;
 
@@ -75,6 +87,27 @@ namespace ChaosMod
 			ShowText("ChaosMod Reloaded");
 		}
 
+		static UIMenu BuildMenu()
+		{
+			var menu = new UIMenu("ChaosMod", "~b~Trigger Commands");
+
+			var items = new List<String>();
+
+			foreach (var pair in COMMANDS)
+			{
+				items.Add(pair.Key);
+			}
+
+			items.Sort();
+
+			foreach (var item in items)
+			{
+				menu.AddItem(new UIMenuItem(item));
+			}
+
+			return menu;
+		}
+
 		/// <summary>
 		/// Commands to set up.
 		/// </summary>
@@ -82,6 +115,7 @@ namespace ChaosMod
 		static Dictionary<String, Command> Commands()
 		{
 			var d = new Dictionary<String, Command>();
+			d.Add("kill", new Commands.Kill());
 			d.Add("give-weapon", new Commands.GiveWeapon());
 			d.Add("wanted", new Commands.Wanted());
 			d.Add("randomize-weather", new Commands.RandomizeWeather());
@@ -114,12 +148,10 @@ namespace ChaosMod
 			d.Add("exploding-punches", new Commands.ExplodingPunches());
 			d.Add("drunk", new Commands.Drunk(false));
 			d.Add("very-drunk", new Commands.Drunk(true));
-			d.Add("camera-freeze", new Commands.CameraFreeze());
 			d.Add("set-on-fire", new Commands.SetOnFire());
 			d.Add("set-peds-on-fire", new Commands.SetPedsOnFire());
 			d.Add("make-fire-proof", new Commands.MakeFireProof());
 			d.Add("make-peds-aggressive", new Commands.MakePedsAggressive());
-			d.Add("reverse-controls", new Commands.ReverseControls());
 			d.Add("matrix-slam", new Commands.MatrixSlam());
 			d.Add("disable-control", new Commands.DisableControl());
 			d.Add("close-parachute", new Commands.CloseParachute());
@@ -127,6 +159,9 @@ namespace ChaosMod
 			d.Add("levitate", new Commands.Levitate());
 			d.Add("eject", new Commands.Eject());
 			d.Add("slow-down-time", new Commands.SlowDownTime());
+			d.Add("levitate-entities", new Commands.LevitateEntities());
+			d.Add("fire-ammo", new Commands.FireAmmo());
+			d.Add("fuel-leakage", new Commands.FuelLeakage());
 			return d;
 		}
 
@@ -137,28 +172,47 @@ namespace ChaosMod
 		{
 			HandleKeyDowns();
 
-			if (e.KeyCode == Keys.K)
+			if (e.KeyCode == Keys.Enter)
 			{
-				var player = Game.Player.Character;
+				var selection = menu.MenuItems[menu.CurrentSelection];
 
-				if (player != null)
+				Command command = null;
+
+				if (COMMANDS.TryGetValue(selection.Text, out command))
 				{
-					player.Kill();
+					var args = new List<String>();
+					COMMANDS[selection.Text].Handle(this, "tester", args);
 				}
+
+				menu.Visible = false;
 			}
 
-			// for testing cheats
 			if (e.KeyCode == Keys.J)
 			{
-				var args = new List<String>();
-				COMMANDS["levitate"].Handle(this, "tester", args);
+				if (!menu.Visible)
+				{
+					menu.Visible = true;
+				}
+
+				menu.GoDownOverflow();
 			}
 
-			// for testing cheats
-			if (e.KeyCode == Keys.H)
+			if (e.KeyCode == Keys.K)
 			{
-				var args = new List<String>();
-				COMMANDS["slow-down-time"].Handle(this, "tester", args);
+				if (!menu.Visible)
+				{
+					menu.Visible = true;
+				}
+
+				menu.GoUpOverflow();
+			}
+
+			if (menu.Visible)
+			{
+				if (e.KeyCode == Keys.Back)
+				{
+					menu.Visible = false;
+				}
 			}
 		}
 
@@ -169,30 +223,7 @@ namespace ChaosMod
 		{
 			HandleTickers();
 			HandleUniqueTickers();
-			HandleTextTimer();
 			CheckQueue();
-		}
-
-		void SetupUiElements()
-		{
-			var width = 600;
-			var height = 24;
-
-			var background = Color.FromArgb(256 / 8, 255, 255, 255);
-			var foreground = Color.FromArgb(255, 255, 255);
-
-			var fontSize = 0.5f;
-
-			Point pos = new Point(UI.WIDTH / 2 - width / 2, UI.HEIGHT - height - 20);
-
-			textContainer = new UIContainer(pos, new Size(width, height), background);
-			text = new UIText("TEST CAPTION", new Point(width / 2, 0), fontSize, foreground, GTA.Font.ChaletComprimeCologne, true);
-			text.Outline = true;
-			textContainer.Items.Add(text);
-
-			textContainer.Enabled = false;
-
-			var menuPool = new NativeUI.MenuPool();
 		}
 
 		void Receive()
@@ -222,21 +253,6 @@ namespace ChaosMod
 		public void ShowText(String text, float timer)
 		{
 			UI.Notify(text);
-		}
-
-		private void HandleTextTimer()
-		{
-			if (textTimer <= 0)
-			{
-				return;
-			}
-
-			textTimer -= Game.LastFrameTime;
-
-			if (textTimer <= 0)
-			{
-				textContainer.Enabled = false;
-			}
 		}
 
 		private void CheckQueue()
@@ -283,6 +299,44 @@ namespace ChaosMod
 		}
 
 		/// <summary>
+		/// Setup a new timer.
+		/// </summary>
+		public Timer Timer(String what, float duration)
+		{
+			BarTimerBar bar = new BarTimerBar(what);
+			bar.ForegroundColor = Color.White;
+			bar.BackgroundColor = Color.DimGray;
+			timers.Add(bar);
+			return new PlayerTimer(timers, bar, duration);
+		}
+
+		/// <summary>
+		/// Setup a new timer.
+		/// </summary>
+		public Gauge Gauge(String what)
+		{
+			BarTimerBar bar = new BarTimerBar(what);
+			timers.Add(bar);
+			return new Gauge(timers, bar);
+		}
+
+		/// <summary>
+		/// Setup a new timer.
+		/// </summary>
+		public AnonymousTimer AnonymousTimer(float duration)
+		{
+			return new AnonymousTimer(timers, 0f, duration);
+		}
+
+		/// <summary>
+		/// Setup a new timer.
+		/// </summary>
+		public AnonymousTimer AnonymousTimer(float initial, float duration)
+		{
+			return new AnonymousTimer(timers, initial, duration);
+		}
+
+		/// <summary>
 		/// Add a thing that handles ticks every frame.
 		/// </summary>
 		public void AddTicker(ITicker ticker)
@@ -306,8 +360,15 @@ namespace ChaosMod
 		/// </summary>
 		public bool AddUniqueTicker(TickerId id, ITicker ticker)
 		{
-			var node = this.tickers.AddLast(ticker);
-			var added = !uniqueTickers.ContainsKey(id);
+			ITicker value = null;
+			var added = true;
+
+			if (uniqueTickers.TryGetValue(id, out value))
+			{
+				value.Stop();
+				added = false;
+			}
+
 			uniqueTickers[id] = ticker;
 			return added;
 		}
@@ -325,14 +386,7 @@ namespace ChaosMod
 				{
 					var prev = current;
 					current = current.Next;
-
-					var what = prev.Value.What();
-
-					if (what != null)
-					{
-						ShowText($"{what} is over", 2f);
-					}
-
+					prev.Value.Stop();
 					tickers.Remove(prev);
 					continue;
 				}
@@ -367,7 +421,7 @@ namespace ChaosMod
 		/// </summary>
 		private void HandleUniqueTickers()
 		{
-			var removed = new List<TickerId>();
+			var removed = new List<KeyValuePair<TickerId, ITicker>>();
 
 			foreach (var pair in uniqueTickers)
 			{
@@ -376,20 +430,14 @@ namespace ChaosMod
 					continue;
 				}
 
-				var what = pair.Value.What();
-
-				if (what != null)
-				{
-					ShowText($"{what} is over", 2f);
-				}
-
-				removed.Add(pair.Key);
+				removed.Add(pair);
 			}
 
 			// remove all keys that have expired.
-			foreach (var key in removed)
+			foreach (var pair in removed)
 			{
-				uniqueTickers.Remove(key);
+				uniqueTickers.Remove(pair.Key);
+				pair.Value.Stop();
 			}
 		}
 
@@ -877,6 +925,194 @@ namespace ChaosMod
 		{
 			GroupId = World.AddRelationshipGroup("hates-player");
 			World.SetRelationshipBetweenGroups(Relationship.Hate, Game.GenerateHash("PLAYER"), this.GroupId);
+		}
+	}
+
+	/// <summary>
+	/// A timer that can be ticked.
+	/// </summary>
+	public interface Timer
+	{
+		/// <summary>
+		/// Get the remaining time.
+		/// </summary>
+		float Remaining
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Stop the timer, cleaning up any resources it uses.
+		/// </summary>
+		void Stop();
+
+		/// <summary>
+		/// Tick the timer.
+		/// </summary>
+		bool Tick();
+	}
+
+	public class PlayerTimer : Timer
+	{
+		private TimerBarPool pool;
+		private BarTimerBar bar;
+		private float duration;
+		private float elapsed;
+
+		public float Remaining
+		{
+			get
+			{
+				return duration - elapsed;
+			}
+		}
+
+		public PlayerTimer(TimerBarPool pool, BarTimerBar bar, float duration)
+		{
+			this.pool = pool;
+			this.bar = bar;
+			this.duration = duration;
+			this.elapsed = 0f;
+		}
+
+		/// <summary>
+		/// Stop the current timer, removing it from being displayed.
+		/// </summary>
+		public void Stop()
+		{
+			pool.Remove(bar);
+		}
+
+		/// <summary>
+		/// Tick the current timer, possibly advancing it.
+		/// </summary>
+		public bool Tick()
+		{
+			elapsed += Game.LastFrameTime;
+
+			if (elapsed >= duration)
+			{
+				return true;
+			}
+
+			bar.Percentage = Remaining / duration;
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// An anonymous timer that doesn't have a bar associated with it.
+	/// </summary>
+	public class AnonymousTimer : Timer
+	{
+		private TimerBarPool pool;
+
+		public float Time;
+		public float Duration;
+
+		public float Remaining
+		{
+			get {
+				return Duration - Time;
+			}
+		}
+
+		public AnonymousTimer(TimerBarPool pool, float time, float duration)
+		{
+			this.pool = pool;
+			this.Time = time;
+			this.Duration = duration;
+		}
+
+		public void Stop()
+		{
+		}
+
+		/// <summary>
+		/// Tick the current timer, possibly advancing it.
+		/// </summary>
+		public bool Tick()
+		{
+			Time += Game.LastFrameTime;
+			return Time >= Duration;
+		}
+
+		/// <summary>
+		/// Get the current time as a percentage.
+		/// </summary>
+		public float Percentage()
+		{
+			return Time / Duration;
+		}
+	}
+
+	public class Gauge
+	{
+		private TimerBarPool pool;
+		private BarTimerBar bar;
+		private bool visible;
+
+		public bool Visible
+		{
+			get
+			{
+				return visible;
+			}
+
+			set
+			{
+				if (value == visible)
+				{
+					return;
+				}
+
+				if (value)
+				{
+					pool.Add(bar);
+				}
+				else
+				{
+					pool.Remove(bar);
+				}
+
+				visible = value;
+			}
+		}
+
+		public Gauge(TimerBarPool pool, BarTimerBar bar)
+		{
+			this.pool = pool;
+			this.bar = bar;
+			this.visible = true;
+		}
+
+		/// <summary>
+		/// Stop the gauge, removing it from being displayed.
+		/// </summary>
+		public void Stop()
+		{
+			if (visible)
+			{
+				pool.Remove(bar);
+			}
+		}
+
+		/// <summary>
+		/// Set the percentage of the gauge, as a value between 0-1.
+		/// </summary>
+		public void Set(float percentage)
+		{
+			bar.Percentage = percentage;
+		}
+
+		/// <summary>
+		/// Clear the bar.
+		/// </summary>
+		public void Clear(String text)
+		{
+			bar.Label = text;
+			bar.Percentage = 1f;
+			bar.ForegroundColor = Color.Black;
 		}
 	}
 }

@@ -27,7 +27,14 @@ namespace ChaosMod.Commands
 			{
 				if (ped.IsHuman && !ped.IsOnFire && ped.IsAlive && ped != player)
 				{
-					ped.Stumble(1000);
+					if (ped.CurrentVehicle != null)
+					{
+						ped.Task.ClearAll();
+						ped.AlwaysKeepTask = true;
+						ped.Task.LeaveVehicle();
+					}
+
+					ped.Euphoria.OnFire.Start(10_000);
 					var id = WorldExtension.StartScriptFire(ped.Position, 5, true);
 					scriptFires.Add(new ScriptFire(id, ped));
 				}
@@ -39,7 +46,9 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			mod.AddTicker(new SetPedsOnFireTicker(scriptFires, 10f));
+			var timer = mod.Timer("Peds On Fire", 10f);
+
+			mod.AddTicker(new SetPedsOnFireTicker(scriptFires, timer));
 			mod.ShowText($"{from} set {scriptFires.Count} pedestrians on fire!");
 		}
 
@@ -72,7 +81,6 @@ namespace ChaosMod.Commands
 					return;
 				}
 
-				ped.Stumble(1000);
 				WorldExtension.RemoveScriptFire(this.handle);
 				this.handle = WorldExtension.StartScriptFire(ped.Position, 5, true);
 			}
@@ -101,46 +109,46 @@ namespace ChaosMod.Commands
 			/// <summary>
 			/// The timer to tick.
 			/// </summary>
-			float timer;
+			Timer timer;
 			int lastSecond;
 
-			public SetPedsOnFireTicker(List<ScriptFire> scriptFires, float timer)
+			public SetPedsOnFireTicker(List<ScriptFire> scriptFires, Timer timer)
 			{
 				this.scriptFires = scriptFires;
 				this.timer = timer;
-				this.lastSecond = (int)timer;
+				this.lastSecond = (int) timer.Remaining;
 			}
 
-			public bool Tick()
+			public override void Stop()
 			{
-				timer -= Game.LastFrameTime;
+				timer.Stop();
+			}
 
-				if (timer > 0)
+			public override bool Tick()
+			{
+				var second = (int) timer.Remaining;
+
+				if (second != lastSecond)
 				{
-					if ((int)timer != lastSecond)
-					{
-						lastSecond = (int)timer;
+					lastSecond = second;
 
-						foreach (var fire in scriptFires)
-						{
-							fire.MoveToPed();
-						}
+					foreach (var fire in scriptFires)
+					{
+						fire.MoveToPed();
+					}
+				}
+
+				if (timer.Tick())
+				{
+					foreach (var fire in scriptFires)
+					{
+						fire.Remove();
 					}
 
-					return false;
+					return true;
 				}
 
-				foreach (var fire in scriptFires)
-				{
-					fire.Remove();
-				}
-
-				return true;
-			}
-
-			public String What()
-			{
-				return "putting pedestrians on fire";
+				return false;
 			}
 		}
 	}

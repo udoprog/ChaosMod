@@ -19,7 +19,9 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			if (mod.AddUniqueTicker(TickerId.SetOnFire, new SetOnFireTicker(player, 5f)))
+			var timer = mod.Timer("On Fire", 5f);
+
+			if (mod.AddUniqueTicker(TickerId.SetOnFire, new SetOnFireTicker(player, timer)))
 			{
 				player.StartEntityFire();
 			}
@@ -37,30 +39,28 @@ namespace ChaosMod.Commands
 		/// <summary>
 		/// The timer to tick.
 		/// </summary>
-		float timer;
+		Timer timer;
 
-		public SetOnFireTicker(Ped player, float timer)
+		public SetOnFireTicker(Ped player, Timer timer)
 		{
 			this.player = player;
 			this.timer = timer;
 		}
 
-		public bool Tick()
+		public override void Stop()
 		{
-			timer -= Game.LastFrameTime;
-
-			if (timer > 0)
-			{
-				return false;
-			}
-
-			player.StopEntityFire();
-			return true;
+			timer.Stop();
 		}
 
-		public String What()
+		public override bool Tick()
 		{
-			return null;
+			if (timer.Tick())
+			{
+				player.StopEntityFire();
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

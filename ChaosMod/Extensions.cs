@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using GTA;
 using GTA.Native;
 
@@ -11,6 +12,35 @@ namespace ChaosMod
 		Deploying,
 		Gliding,
 		LandingOrFallingToDoom,
+	}
+
+	public static class EnumeratorExtension
+	{
+		/// <summary>
+		/// Parse next value as a float or return a default value.
+		/// </summary>
+		public static float NextFloatOrDefault(this IEnumerator<String> enumerator, float defaultValue)
+		{
+			if (!enumerator.MoveNext())
+			{
+				return defaultValue;
+			}
+
+			return float.Parse(enumerator.Current);
+		}
+
+		/// <summary>
+		/// Get the next argument, or fallback to default.
+		/// </summary>
+		public static String NextOrDefault(this IEnumerator<String> enumerator, String defaultValue)
+		{
+			if (!enumerator.MoveNext())
+			{
+				return defaultValue;
+			}
+
+			return enumerator.Current;
+		}
 	}
 
 	public static class WorldExtension
@@ -58,6 +88,21 @@ namespace ChaosMod
 
 	public static class PedExtension
 	{
+		/// <summary>
+		/// Cause the pedestrian to levitate.
+		/// </summary>
+		public static LevitateController Levitate(this Ped ped, Random rnd, Timer timer)
+		{
+			var extraHeight = 4f + (float)(rnd.NextDouble() * 2f);
+			float? jitter = 0.05f;
+			ped.Euphoria.HighFall.Start(10_000);
+
+			var position = new GTA.Math.Vector2(ped.Position.X, ped.Position.Y);
+			var height = World.GetGroundHeight(position) + extraHeight;
+
+			return new LevitateController(timer, ped, height, rnd, jitter);
+		}
+
 		/// <summary>
 		/// Get the parachute state of a ped.
 		/// </summary>
@@ -230,6 +275,27 @@ namespace ChaosMod
 			// this causes the game to crash.
 			// vehicle.TrimColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
 			vehicle.PearlescentColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
+
+			var colorCombinationCount = vehicle.ColorCombinationCount;
+
+			if (colorCombinationCount > 0)
+			{
+				vehicle.ColorCombination = rnd.Next(0, colorCombinationCount);
+			}
+		}
+
+		/// <summary>
+		/// Cause the vehicle to levitate.
+		/// </summary>
+		public static LevitateController Levitate(this Vehicle vehicle, Random rnd, Timer timer)
+		{
+			var extraHeight = 10f + (float)(rnd.NextDouble() * 5f);
+			float? jitter = null;
+
+			var position = new GTA.Math.Vector2(vehicle.Position.X, vehicle.Position.Y);
+			var height = World.GetGroundHeight(position) + extraHeight;
+
+			return new LevitateController(timer, vehicle, height, rnd, jitter);
 		}
 	}
 

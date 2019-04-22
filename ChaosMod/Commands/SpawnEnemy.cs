@@ -91,7 +91,11 @@ namespace ChaosMod.Commands
 			this.ped = ped;
 		}
 
-		public bool Tick()
+		public override void Stop()
+		{
+		}
+
+		public override bool Tick()
 		{
 			if (this.ped.IsAlive)
 			{
@@ -100,11 +104,6 @@ namespace ChaosMod.Commands
 
 			this.blip.Remove();
 			return true;
-		}
-
-		public String What()
-		{
-			return null;
 		}
 	}
 }

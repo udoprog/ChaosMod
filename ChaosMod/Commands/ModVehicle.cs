@@ -41,14 +41,8 @@ namespace ChaosMod.Commands
 
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
-			var r = rest.GetEnumerator();
-
-			if (!r.MoveNext())
-			{
-				throw new Exception("expected argument");
-			}
-
-			var id = this.ParseModId(r.Current);
+			var stringId = rest.GetEnumerator().NextOrDefault("random");
+			var id = ParseModId(stringId);
 
 			var player = Game.Player.Character;
 

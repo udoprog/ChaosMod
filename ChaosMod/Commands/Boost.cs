@@ -29,6 +29,7 @@ namespace ChaosMod.Commands
 				return;
 			}
 
+			var what = "Boost";
 			float time = 0.5f;
 			float factor = 2f;
 			var wheelsOnGround = true;
@@ -38,14 +39,18 @@ namespace ChaosMod.Commands
 				time = 2f;
 				factor = 10f;
 				wheelsOnGround = true;
+				what = "Super Boost";
 
-				if (mod.AddUniqueTicker(TickerId.Invincibility, new InvincibilityTicker(10f, player)))
+				var invincibilityTimer = mod.Timer("Invincibility", time * 2);
+
+				if (mod.AddUniqueTicker(TickerId.Invincibility, new InvincibilityTicker(invincibilityTimer, player)))
 				{
 					player.IsInvincible = true;
 				}
 			}
 
-			mod.AddTicker(new BoostTicker(player, time, factor, wheelsOnGround));
+			var timer = mod.Timer(what, time);
+			mod.AddTicker(new BoostTicker(player, timer, factor, wheelsOnGround));
 			mod.ShowText($"{from} caused the vehicle to boost!");
 		}
 
@@ -58,7 +63,7 @@ namespace ChaosMod.Commands
 			/// <summary>
 			/// Time the vehicle is being boosted for.
 			/// </summary>
-			float timer;
+			Timer timer;
 			/// <summary>
 			/// Force to apply for the boost.
 			/// </summary>
@@ -68,7 +73,7 @@ namespace ChaosMod.Commands
 			/// </summary>
 			bool wheelsOnGround;
 
-			public BoostTicker(Ped player, float timer, float factor, bool wheelsOnGround)
+			public BoostTicker(Ped player, Timer timer, float factor, bool wheelsOnGround)
 			{
 				this.player = player;
 				this.timer = timer;
@@ -76,7 +81,12 @@ namespace ChaosMod.Commands
 				this.wheelsOnGround = wheelsOnGround;
 			}
 
-			public bool Tick()
+			public override void Stop()
+			{
+				timer.Stop();
+			}
+
+			public override bool Tick()
 			{
 				var vehicle = player.CurrentVehicle;
 
@@ -95,19 +105,7 @@ namespace ChaosMod.Commands
 					vehicle.ApplyForceRelative(this.force * delta);
 				}
 
-				timer -= delta;
-
-				if (timer > 0)
-				{
-					return false;
-				}
-
-				return true;
-			}
-
-			public String What()
-			{
-				return null;
+				return timer.Tick();
 			}
 		}
 	}

@@ -5,36 +5,36 @@ using System.Collections.Generic;
 namespace ChaosMod.Commands
 {
 	/// <summary>
-	/// Enable exploding punches for 20 seconds.
+	/// Enable fire ammo.
 	/// </summary>
-	public class ExplodingPunches : Command
+	public class FireAmmo : Command
 	{
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
 			var duration = rest.GetEnumerator().NextFloatOrDefault(30f);
-			var timer = mod.Timer("Exploding Punches", duration);
-			mod.AddUniqueTicker(TickerId.ExplodingPunches, new ExplodingPunchesTicker(timer));
-			mod.ShowText($"{from} enabled exploding punches!");
+			var timer = mod.Timer("Fire Ammo", duration);
+			mod.AddUniqueTicker(TickerId.ExplodingBullets, new FireAmmoTicker(timer));
+			mod.ShowText($"{from} enabled fire ammo!");
 		}
 	}
 
-	class ExplodingPunchesTicker : ITicker
+	class FireAmmoTicker : ITicker
 	{
 		Timer timer;
 
-		public ExplodingPunchesTicker(Timer timer)
+		public FireAmmoTicker(Timer timer)
 		{
 			this.timer = timer;
 		}
 
 		public override void Stop()
 		{
-			timer.Stop();
+			this.timer.Stop();
 		}
 
 		public override bool Tick()
 		{
-			Game.Player.SetExplosiveMeleeThisFrame();
+			Game.Player.SetFireAmmoThisFrame();
 			return timer.Tick();
 		}
 	}

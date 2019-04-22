@@ -11,48 +11,41 @@ namespace ChaosMod.Commands
 	{
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
-			var r = rest.GetEnumerator();
+			var duration = rest.GetEnumerator().NextFloatOrDefault(30f);
+			var timer = mod.Timer("Super Speed", duration);
 
-			if (!r.MoveNext())
+			if (mod.AddUniqueTicker(TickerId.SuperSpeed, new SuperSpeedTicker(timer)))
 			{
-				return;
+				// NB: in spite of its name, it should only be called once.
+				Game.Player.SetRunSpeedMultThisFrame(10f);
 			}
 
-			var time = float.Parse(r.Current);
-
-			if (mod.AddUniqueTicker(TickerId.SuperSpeed, new SuperSpeedTicker(time)))
-			{
-				Game.Player.SetRunSpeedMultThisFrame(time);
-			}
-
-			mod.ShowText($"{from} gave you super speed for {time} seconds");
+			mod.ShowText($"{from} gave you super speed for {duration} seconds");
 		}
 
 		class SuperSpeedTicker : ITicker
 		{
-			private float timer;
+			private Timer timer;
 
-			public SuperSpeedTicker(float timer)
+			public SuperSpeedTicker(Timer timer)
 			{
 				this.timer = timer;
 			}
 
-			public bool Tick()
+			public override void Stop()
 			{
-				timer -= Game.LastFrameTime;
+				timer.Stop();
+			}
 
-				if (timer > 0)
+			public override bool Tick()
+			{
+				if (!timer.Tick())
 				{
 					return false;
 				}
 
 				Game.Player.SetRunSpeedMultThisFrame(1f);
 				return true;
-			}
-
-			public String What()
-			{
-				return "Super Speed";
 			}
 		}
 	}

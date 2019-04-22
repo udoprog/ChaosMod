@@ -19,12 +19,15 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			if (mod.AddUniqueTicker(TickerId.MakeFireProof, new FireProofTicker(player, 10f)))
+			var duration = rest.GetEnumerator().NextFloatOrDefault(30f);
+			var timer = mod.Timer("Fireproof", duration);
+
+			if (mod.AddUniqueTicker(TickerId.MakeFireProof, new FireProofTicker(player, timer)))
 			{
 				player.IsFireProof = true;
 			}
 
-			mod.ShowText($"{from} made you fire proof!");
+			mod.ShowText($"{from} made you fire proof for {duration} seconds!");
 		}
 	}
 
@@ -37,30 +40,28 @@ namespace ChaosMod.Commands
 		/// <summary>
 		/// The timer to tick.
 		/// </summary>
-		float timer;
+		Timer timer;
 
-		public FireProofTicker(Ped player, float timer)
+		public FireProofTicker(Ped player, Timer timer)
 		{
 			this.player = player;
 			this.timer = timer;
 		}
 
-		public bool Tick()
+		public override void Stop()
 		{
-			timer -= Game.LastFrameTime;
+			timer.Stop();
+		}
 
-			if (timer > 0)
+		public override bool Tick()
+		{
+			if (!timer.Tick())
 			{
 				return false;
 			}
 
 			this.player.IsFireProof = false;
 			return true;
-		}
-
-		public String What()
-		{
-			return "Fire proof";
 		}
 	}
 }

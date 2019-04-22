@@ -20,7 +20,8 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			mod.AddTicker(new BrakeTicker(vehicle, 5f));
+			var timer = mod.Timer("Handbrake On", 5f);
+			mod.AddTicker(new BrakeTicker(vehicle, timer));
 			mod.ShowText($"{from} caused the vehicle to brake!");
 		}
 	}
@@ -34,32 +35,24 @@ namespace ChaosMod.Commands
 		/// <summary>
 		/// Time the vehicle is being braked for.
 		/// </summary>
-		float timer;
+		Timer timer;
 
-		public BrakeTicker(Vehicle vehicle, float timer)
+		public BrakeTicker(Vehicle vehicle, Timer timer)
 		{
 			this.vehicle = vehicle;
 			this.timer = timer;
 			this.vehicle.HandbrakeOn = true;
 		}
 
-		public bool Tick()
+		public override void Stop()
 		{
-			timer -= Game.LastFrameTime;
-
-			if (timer <= 0)
-			{
-				timer = 0;
-				vehicle.HandbrakeOn = false;
-				return true;
-			}
-
-			return false;
+			timer.Stop();
 		}
 
-		public String What()
+		public override bool Tick()
 		{
-			return "braking your vehicle";
+			vehicle.HandbrakeOn = false;
+			return timer.Tick();
 		}
 	}
 }

@@ -11,37 +11,31 @@ namespace ChaosMod.Commands
 	{
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
-			mod.AddUniqueTicker(TickerId.ExplodingBullets, new ExplodingBulletsTicker(10));
+			var duration = rest.GetEnumerator().NextFloatOrDefault(30f);
+			var timer = mod.Timer("Exploding Bullets", duration);
+			mod.AddUniqueTicker(TickerId.ExplodingBullets, new ExplodingBulletsTicker(timer));
 			mod.ShowText($"{from} enabled exploding bullets!");
 		}
 	}
 
 	class ExplodingBulletsTicker : ITicker
 	{
-		float timer;
+		Timer timer;
 
-		public ExplodingBulletsTicker(float timer)
+		public ExplodingBulletsTicker(Timer timer)
 		{
 			this.timer = timer;
 		}
 
-		public bool Tick()
+		public override void Stop()
 		{
-			var delta = Game.LastFrameTime;
-			timer -= delta;
-
-			if (timer <= 0)
-			{
-				return true;
-			}
-
-			Game.Player.SetExplosiveAmmoThisFrame();
-			return false;
+			this.timer.Stop();
 		}
 
-		public String What()
+		public override bool Tick()
 		{
-			return "Exploding bullets";
+			Game.Player.SetExplosiveAmmoThisFrame();
+			return timer.Tick();
 		}
 	}
 }

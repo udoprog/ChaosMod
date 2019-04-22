@@ -11,13 +11,7 @@ namespace ChaosMod.Commands
 	{
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
-			var r = rest.GetEnumerator();
-
-			if (!r.MoveNext())
-			{
-				return;
-			}
-
+			var duration = rest.GetEnumerator().NextFloatOrDefault(30f);
 			var player = Game.Player.Character;
 
 			if (player == null)
@@ -26,45 +20,42 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			var time = float.Parse(r.Current);
+			var timer = mod.Timer("Invincibility", duration);
 
-			if (mod.AddUniqueTicker(TickerId.Invincibility, new InvincibilityTicker(time, player)))
+			if (mod.AddUniqueTicker(TickerId.Invincibility, new InvincibilityTicker(timer, player)))
 			{
 				Game.Player.IsInvincible = true;
 			}
 
-			mod.ShowText($"{from} gave you invincibility for {time} seconds!");
+			mod.ShowText($"{from} gave you invincibility for {duration} seconds!");
 		}
 	}
 
 	class InvincibilityTicker : ITicker
 	{
-		private float timer;
+		private Timer timer;
 		private Ped ped;
 
-		public InvincibilityTicker(float timer, Ped ped)
+		public InvincibilityTicker(Timer timer, Ped ped)
 		{
 			this.timer = timer;
 			this.ped = ped;
 		}
 
-		public bool Tick()
+		public override void Stop()
 		{
-			var delta = Game.LastFrameTime;
-			timer -= delta;
+			timer.Stop();
+		}
 
-			if (timer <= 0)
+		public override bool Tick()
+		{
+			if (timer.Tick())
 			{
 				ped.IsInvincible = false;
 				return true;
 			}
 
 			return false;
-		}
-
-		public String What()
-		{
-			return "Invincibility";
 		}
 	}
 }
