@@ -323,6 +323,14 @@ namespace ChaosMod
 		/// <summary>
 		/// Setup a new timer.
 		/// </summary>
+		public RandomTimer RandomTimer(float initial, float magnitude)
+		{
+			return new RandomTimer(Rnd, initial, magnitude);
+		}
+
+		/// <summary>
+		/// Setup a new timer.
+		/// </summary>
 		public AnonymousTimer AnonymousTimer(float duration)
 		{
 			return new AnonymousTimer(timers, 0f, duration);
@@ -1043,6 +1051,73 @@ namespace ChaosMod
 		public float Percentage()
 		{
 			return Time / Duration;
+		}
+	}
+
+	/// <summary>
+	/// A timer that ticks randomly.
+	/// </summary>
+	public class RandomTimer : Timer
+	{
+		private Random rnd;
+		private float initial;
+		private float magnitude;
+
+		public float Time;
+		public float Duration;
+
+		public float Remaining
+		{
+			get
+			{
+				return Duration - Time;
+			}
+		}
+
+		public RandomTimer(Random rnd, float initial, float magnitude)
+		{
+			this.rnd = rnd;
+			this.initial = initial;
+			this.magnitude = magnitude;
+			this.Time = 0;
+			this.Duration = NextDuration();
+		}
+
+		public void Stop()
+		{
+		}
+
+		/// <summary>
+		/// Tick the current timer, possibly advancing it.
+		/// </summary>
+		public bool Tick()
+		{
+			Time += Game.LastFrameTime;
+
+			if (Time >= Duration)
+			{
+				Time = 0;
+				Duration = NextDuration();
+				return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Get the current time as a percentage.
+		/// </summary>
+		public float Percentage()
+		{
+			return Time / Duration;
+		}
+
+		/// <summary>
+		/// Get the next duration.
+		/// </summary>
+		private float NextDuration()
+		{
+			return (float)rnd.NextDouble() * magnitude + initial;
 		}
 	}
 

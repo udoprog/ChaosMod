@@ -12,11 +12,7 @@ namespace ChaosMod.Commands
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
 			Ped player = Game.Player.Character;
-
-			player.Euphoria.ApplyImpulse.ResetArguments();
-			player.Euphoria.ApplyImpulse.Impulse = player.ForwardVector * 500;
-			player.Euphoria.ApplyImpulse.Start(2000);
-
+			player.Euphoria.HighFall.Start(1000);
 			mod.ShowText($"{from} caused you to fall!");
 		}
 	}

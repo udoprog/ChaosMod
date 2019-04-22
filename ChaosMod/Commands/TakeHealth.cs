@@ -12,13 +12,7 @@ namespace ChaosMod.Commands
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
 			Ped player = Game.Player.Character;
-
-			if (player == null)
-			{
-				return;
-			}
-
-			player.Stumble(500);
+			player.Euphoria.ShotInGuts.Start(500);
 			mod.TakeHealth();
 		}
 	}

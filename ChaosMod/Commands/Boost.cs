@@ -30,27 +30,17 @@ namespace ChaosMod.Commands
 			}
 
 			var what = "Boost";
-			float time = 0.5f;
-			float factor = 2f;
-			var wheelsOnGround = true;
+			float time = 30f;
+			float factor = 20f;
 
 			if (super)
 			{
-				time = 2f;
-				factor = 10f;
-				wheelsOnGround = true;
+				factor = 200f;
 				what = "Super Boost";
-
-				var invincibilityTimer = mod.Timer("Invincibility", time * 2);
-
-				if (mod.AddUniqueTicker(TickerId.Invincibility, new InvincibilityTicker(invincibilityTimer, player)))
-				{
-					player.IsInvincible = true;
-				}
 			}
 
 			var timer = mod.Timer(what, time);
-			mod.AddTicker(new BoostTicker(player, timer, factor, wheelsOnGround));
+			mod.AddTicker(new BoostTicker(player, timer, factor));
 			mod.ShowText($"{from} caused the vehicle to boost!");
 		}
 
@@ -67,18 +57,13 @@ namespace ChaosMod.Commands
 			/// <summary>
 			/// Force to apply for the boost.
 			/// </summary>
-			GTA.Math.Vector3 force;
-			/// <summary>
-			/// Does the boost require wheels to be on ground or not.
-			/// </summary>
-			bool wheelsOnGround;
+			float factor;
 
-			public BoostTicker(Ped player, Timer timer, float factor, bool wheelsOnGround)
+			public BoostTicker(Ped player, Timer timer, float factor)
 			{
 				this.player = player;
 				this.timer = timer;
-				this.force = GTA.Math.Vector3.WorldNorth * 100f * factor;
-				this.wheelsOnGround = wheelsOnGround;
+				this.factor = factor;
 			}
 
 			public override void Stop()
@@ -88,24 +73,22 @@ namespace ChaosMod.Commands
 
 			public override bool Tick()
 			{
-				var vehicle = player.CurrentVehicle;
-
-				if (vehicle == null)
+				if (timer.Tick() || !player.IsAlive)
 				{
 					return true;
 				}
 
+				var vehicle = player.CurrentVehicle;
 				var delta = Game.LastFrameTime;
 
-				var isFlying = player.IsInFlyingVehicle && vehicle.IsInAir;
-				var isGrounded = !wheelsOnGround && vehicle.IsInAir || vehicle.IsOnAllWheels;
-
-				if (isFlying || isGrounded)
+				if (vehicle != null)
 				{
-					vehicle.ApplyForceRelative(this.force * delta);
+					var a = vehicle.Acceleration;
+					var forward = GTA.Math.Vector3.WorldNorth;
+					vehicle.ApplyForceRelative(forward * delta * a * factor);
 				}
 
-				return timer.Tick();
+				return false;
 			}
 		}
 	}

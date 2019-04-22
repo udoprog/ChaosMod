@@ -22,6 +22,7 @@ namespace ChaosMod
 		Levitation,
 		Drunk,
 		LevitatingEntities,
+		Reverse,
 	}
 
 	public abstract class ITicker

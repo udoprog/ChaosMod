@@ -166,30 +166,6 @@ namespace ChaosMod
 		}
 
 		/// <summary>
-		/// Make the ped stumble.
-		/// </summary>
-		public static void Stumble(this Ped ped, int durationMs)
-		{
-			ped.Euphoria.ArmsWindmillAdaptive.ResetArguments();
-
-			ped.Euphoria.ArmsWindmillAdaptive.AngSpeed = 6f;
-			ped.Euphoria.ArmsWindmillAdaptive.Amplitude = 1.5f;
-			ped.Euphoria.ArmsWindmillAdaptive.LeftElbowAngle = 0.1f;
-			ped.Euphoria.ArmsWindmillAdaptive.RightElbowAngle = 0.1f;
-			ped.Euphoria.ArmsWindmillAdaptive.DisableOnImpact = true;
-			ped.Euphoria.ArmsWindmillAdaptive.BendLeftElbow = true;
-			ped.Euphoria.ArmsWindmillAdaptive.BendRightElbow = true;
-
-			ped.Euphoria.ArmsWindmillAdaptive.Start(durationMs);
-
-			ped.Euphoria.ApplyImpulse.ResetArguments();
-			ped.Euphoria.ApplyImpulse.Impulse = ped.ForwardVector * -100;
-			ped.Euphoria.ApplyImpulse.Start(durationMs);
-
-			ped.Euphoria.BodyBalance.Start();
-		}
-
-		/// <summary>
 		/// Set flee attributes.
 		/// </summary>
 		public static void SetFleeAttributes(this Ped ped, int attributes, bool p2)
