@@ -100,6 +100,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>COPY "$(TargetPath)" "D:\Steam\steamapps\common\Grand Theft Auto V\scripts"</PostBuildEvent>
+    <PostBuildEvent>IF NOT EXIST "D:\Steam\steamapps\common\Grand Theft Auto V\scripts" GOTO NODIR
+COPY "$(TargetPath)" "D:\Steam\steamapps\common\Grand Theft Auto V\scripts"
+:NODIR</PostBuildEvent>
   </PropertyGroup>
 </Project>

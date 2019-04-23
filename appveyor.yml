@@ -1,0 +1,24 @@
+image: Visual Studio 2017
+
+build_script:
+  - msbuild /t:Build /p:Configuration=Release
+  - ps: Copy-Item .\ChaosMod\bin\Release\ChaosMod.dll -Destination ChaosMod-$env:APPVEYOR_REPO_TAG_NAME.dll
+
+artifacts:
+  - path: .\ChaosMod-*.dll
+    name: ChaosMod
+
+branches:
+  only:
+    - /\d+\.\d+\.\d+/
+
+deploy:
+  - release: $(appveyor_repo_tag_name)
+    provider: GitHub
+    auth_token:
+      secure: QlcWMc/7j2eVy1J8j0CFm3tUev+ZC6zXh7SrP2aFuE1trzhtf0IDbx2eTnYzta0h
+    artifact: ChaosMod
+    draft: false
+    prerelease: false
+    on:
+      APPVEYOR_REPO_TAG: true
