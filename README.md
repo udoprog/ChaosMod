@@ -14,6 +14,7 @@ The bot that handles this is [setmod].
 
 These need to be installed to run `ChaosMod`:
 
+* Only works for 1.27 right now, later versions seem to crash.
 * [ScriptHookV.NET](https://www.gta5-mods.com/tools/scripthookv-net)
 * [NativeUI](https://github.com/Guad/NativeUI/releases/)
 
