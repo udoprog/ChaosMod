@@ -29,13 +29,13 @@ namespace ChaosMod
 		public static WeaponHash[] ALL_WEAPONS = (WeaponHash[])Enum.GetValues(typeof(WeaponHash));
 		public static List<VehicleHash> ALL_VEHICLES = AllVehicles();
 		public static Dictionary<String, VehicleHash> ALL_VEHICLES_BY_ID = AllVehiclesById();
+		public static Dictionary<String, WeaponHash> ALL_WEAPONS_BY_ID = AllWeaponsById();
 
 		static List<VehicleHash[]> SLOW_CARS = SlowCars();
 		static List<VehicleHash[]> NORMAL_CARS = NormalCars();
 		static List<VehicleHash[]> FAST_CARS = FastCars();
 		static List<VehicleHash[]> BIKES = Bikes();
 		static List<VehicleHash[]> PEDAL_BIKES = PedalBikes();
-		static Dictionary<String, WeaponHash[]> WEAPONS = Weapons();
 		static Dictionary<String, Command> COMMANDS = Commands();
 
 		/// <summary>
@@ -170,6 +170,9 @@ namespace ChaosMod
 			d.Add("change-current-vehicle", new Commands.ChangeCurrentVehicle());
 			d.Add("randomize-doors", new Commands.RandomizeDoors());
 			d.Add("skyfall", new Commands.Skyfall());
+			d.Add("taze", new Commands.Taze());
+			d.Add("taze-others", new Commands.TazeOthers());
+			d.Add("reduce-gravity", new Commands.ReduceGravity());
 			return d;
 		}
 
@@ -323,7 +326,7 @@ namespace ChaosMod
 		/// <summary>
 		/// Setup a new timer.
 		/// </summary>
-		public Timer Timer(String what, float duration)
+		public PlayerTimer Timer(String what, float duration)
 		{
 			BarTimerBar bar = new BarTimerBar(what);
 			bar.ForegroundColor = Color.White;
@@ -760,12 +763,28 @@ namespace ChaosMod
 		}
 
 		/// <summary>
-		/// Get a list of all vehicles.
+		/// Get a dictionary of all vehicles by id.
 		/// </summary>
 		static Dictionary<String, VehicleHash> AllVehiclesById()
 		{
 			var array = (VehicleHash[])Enum.GetValues(typeof(VehicleHash));
 			var d = new Dictionary<String, VehicleHash>();
+
+			foreach (var v in array)
+			{
+				d[v.ToString().ToLower()] = v;
+			}
+
+			return d;
+		}
+
+		/// <summary>
+		/// Get a dictionary of all weapons by id.
+		/// </summary>
+		static Dictionary<String, WeaponHash> AllWeaponsById()
+		{
+			var array = (WeaponHash[])Enum.GetValues(typeof(WeaponHash));
+			var d = new Dictionary<String, WeaponHash>();
 
 			foreach (var v in array)
 			{
@@ -869,68 +888,14 @@ namespace ChaosMod
 				return null;
 			}
 
-			WeaponHash[] array;
+			WeaponHash weaponHash = WeaponHash.Unarmed;
 
-			if (!WEAPONS.TryGetValue(id, out array))
+			if (ALL_WEAPONS_BY_ID.TryGetValue(id, out weaponHash))
 			{
-				return null;
+				return weaponHash;
 			}
 
-			List<WeaponHash> candidates = new List<WeaponHash>();
-
-			foreach (WeaponHash hash in array)
-			{
-				if (!player.Weapons.HasWeapon(hash))
-				{
-					candidates.Add(hash);
-				}
-			}
-
-			if (candidates.Count == 0)
-			{
-				return null;
-			}
-
-			return candidates[Rnd.Next(0, candidates.Count)];
-		}
-
-		static Dictionary<String, WeaponHash[]> Weapons()
-		{
-			var d = new Dictionary<String, WeaponHash[]>();
-
-			d.Add("ak47", new WeaponHash[] { WeaponHash.AssaultRifle });
-			d.Add("assault-rifle", new WeaponHash[] { WeaponHash.AssaultRifle });
-
-			d.Add("m4", new WeaponHash[] { WeaponHash.CarbineRifle });
-			d.Add("carbine-rifle", new WeaponHash[] { WeaponHash.CarbineRifle });
-
-			d.Add("grenade", new WeaponHash[] { WeaponHash.Grenade });
-			d.Add("c4", new WeaponHash[] { WeaponHash.StickyBomb });
-			d.Add("sticky-bomb", new WeaponHash[] { WeaponHash.StickyBomb });
-
-			d.Add("grenade-launcher", new WeaponHash[] { WeaponHash.GrenadeLauncher });
-			d.Add("grenade-launcher-smoke", new WeaponHash[] { WeaponHash.GrenadeLauncherSmoke });
-
-			d.Add("rocket-launcher", new WeaponHash[] { WeaponHash.RPG });
-			d.Add("rpg", new WeaponHash[] { WeaponHash.RPG });
-
-			d.Add("knife", new WeaponHash[] { WeaponHash.Knife });
-
-			d.Add("firework", new WeaponHash[] { WeaponHash.Firework });
-
-			d.Add("minigun", new WeaponHash[] {
-				WeaponHash.Minigun
-			});
-
-			d.Add("pistol", new WeaponHash[] {
-				WeaponHash.Pistol
-			});
-
-			d.Add("parachute", new WeaponHash[] {
-				WeaponHash.Parachute
-			});
-
-			return d;
+			return null;
 		}
 	}
 
@@ -983,7 +948,7 @@ namespace ChaosMod
 		bool Tick();
 	}
 
-	public class PlayerTimer : Timer
+	public class PlayerTimer : ITicker, Timer
 	{
 		private TimerBarPool pool;
 		private BarTimerBar bar;
@@ -1017,7 +982,7 @@ namespace ChaosMod
 		/// <summary>
 		/// Stop the current timer, removing it from being displayed.
 		/// </summary>
-		public void Stop()
+		public override void Stop()
 		{
 			pool.Remove(bar);
 		}
@@ -1025,7 +990,7 @@ namespace ChaosMod
 		/// <summary>
 		/// Tick the current timer, possibly advancing it.
 		/// </summary>
-		public bool Tick()
+		public override bool Tick()
 		{
 			elapsed += Game.LastFrameTime;
 

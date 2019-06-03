@@ -23,6 +23,9 @@ namespace ChaosMod
 		Drunk,
 		LevitatingEntities,
 		Reverse,
+		Electrocuted,
+		ElectrocutedOthers,
+		ReducedGravity,
 	}
 
 	public abstract class ITicker
