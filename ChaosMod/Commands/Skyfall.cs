@@ -30,21 +30,18 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			var timer = mod.Timer("Skyfall", 10f);
+			var timer = mod.Timer("Skyfall", 20f);
 			player.Weapons.Give(WeaponHash.Parachute, 1, true, true);
-			player.Euphoria.HighFall.Start(11_000);
-			mod.AddTicker(new SkyfallTicker(player, timer));
+			mod.AddUniqueTicker(TickerId.Skyfall, new SkyfallTicker(player, timer));
 		}
 
 		class SkyfallTicker : ITicker
 		{
-			GTA.Math.Vector3 facing;
 			Timer timer;
 			Ped player;
 
 			public SkyfallTicker(Ped player, Timer timer)
 			{
-				this.facing = player.ForwardVector;
 				this.player = player;
 				this.timer = timer;
 			}
@@ -56,9 +53,24 @@ namespace ChaosMod.Commands
 
 			public override bool Tick()
 			{
+				switch (player.ParachuteState)
+				{
+					case ParachuteState.Deploying:
+					case ParachuteState.Gliding:
+						return true;
+					case ParachuteState.None:
+						player.Task.ClearAll();
+						player.Task.Skydive();
+						break;
+					default:
+						break;
+				}
+
 				var factor = timer.Remaining / timer.Duration;
-				var force = GTA.Math.Vector3.WorldUp * 3_000f * factor + facing * 1_000f * (1 - factor);
-				player.ApplyForce(force);
+				var facing = player.ForwardVector * 10_000f * (1 - factor);
+				var up = GTA.Math.Vector3.WorldUp * 1_000f * factor;
+				var rotation = GTA.Math.Vector3.Zero;
+				player.ApplyForce(up + facing);
 				return timer.Tick();
 			}
 		}

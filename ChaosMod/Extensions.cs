@@ -5,15 +5,6 @@ using GTA.Native;
 
 namespace ChaosMod
 {
-	public enum ParachuteState
-	{
-		None = -1,
-		FreeFalling,
-		Deploying,
-		Gliding,
-		LandingOrFallingToDoom,
-	}
-
 	public static class EnumeratorExtension
 	{
 		/// <summary>

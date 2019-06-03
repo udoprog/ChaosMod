@@ -26,6 +26,7 @@ namespace ChaosMod
 		Electrocuted,
 		ElectrocutedOthers,
 		ReducedGravity,
+		Skyfall,
 	}
 
 	public abstract class ITicker
