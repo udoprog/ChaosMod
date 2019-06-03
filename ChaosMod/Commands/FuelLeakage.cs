@@ -66,7 +66,7 @@ namespace ChaosMod.Commands
 				vehicle.FuelLevel = level * 100;
 				gauge.Set(level);
 
-				if (timer.Tick())
+				if (vehicle.Acceleration != 0 && timer.Tick())
 				{
 					gauge.Clear("Out Of Fuel");
 					vehicle.FuelLevel = 0;

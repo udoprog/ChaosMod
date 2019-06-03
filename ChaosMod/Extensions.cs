@@ -86,6 +86,22 @@ namespace ChaosMod
 		}
 	}
 
+	/// <summary>
+	/// Known natural motion things.
+	/// List here: https://pastebin.com/AfVmM5AF
+	/// </summary>
+	public enum NaturalMotion
+	{
+		StopAll = 0,
+		LeanRandom = 199,
+		BodyBalance = 466,
+		HighFall1 = 715,
+		HighFall2 = 716,
+		StaggerFall = 1151,
+		ShotInGuts1 = 1119,
+		ShotInGuts2 = 1121,
+	}
+
 	public static class PedExtension
 	{
 		/// <summary>
@@ -95,12 +111,30 @@ namespace ChaosMod
 		{
 			var extraHeight = 4f + (float)(rnd.NextDouble() * 2f);
 			float? jitter = 0.05f;
+
 			ped.Euphoria.HighFall.Start(10_000);
 
 			var position = new GTA.Math.Vector2(ped.Position.X, ped.Position.Y);
 			var height = World.GetGroundHeight(position) + extraHeight;
 
 			return new LevitateController(timer, ped, height, rnd, jitter);
+		}
+
+		/// <summary>
+		/// Set the ped as falling from a great height.
+		/// </summary>
+		public static void SetPedToRagdoll(this Ped ped, int timeMillis, int standupMillis, RagdollType ragdollType)
+		{
+			Function.Call(Hash.SET_PED_TO_RAGDOLL, ped.Handle, timeMillis, standupMillis, (int)ragdollType, true, true, false);
+		}
+
+		/// <summary>
+		/// Give the specified ped the given natural motion task.
+		/// </summary>
+		public static void GiveNaturalMotion(this Ped ped, NaturalMotion motion)
+		{
+			Function.Call(Hash.CREATE_NM_MESSAGE, true, (int)(motion));
+			Function.Call(Hash.GIVE_PED_NM_MESSAGE, ped.Handle);
 		}
 
 		/// <summary>
@@ -188,14 +222,6 @@ namespace ChaosMod
 		{
 			Function.Call(Hash.SET_HIGH_FALL_TASK, ped.Handle, 0, 0, 0);
 		}
-
-		/// <summary>
-		/// Set the ped as falling from a great height.
-		/// </summary>
-		public static void SetPedToRagdoll(this Ped ped, int timeMillis, int standupMillis, int ragdollType)
-		{
-			Function.Call(Hash.SET_PED_TO_RAGDOLL, ped.Handle, timeMillis, standupMillis, ragdollType, false, false, false);
-		}
 	}
 
 	public static class VehicleExtension
@@ -217,7 +243,7 @@ namespace ChaosMod
 					on = true;
 				}
 
-				vehicle.SetNeonLightsOn(neon, on);
+				vehicle.Mods.SetNeonLightsOn(neon, on);
 			}
 		}
 
@@ -226,37 +252,39 @@ namespace ChaosMod
 		/// </summary>
 		public static void RandomizeColors(this Vehicle vehicle, Random rnd)
 		{
+			var mods = vehicle.Mods;
+
 			if (rnd.NextBoolean())
 			{
-				vehicle.CustomPrimaryColor = rnd.NextColor();
+				mods.CustomPrimaryColor = rnd.NextColor();
 			}
 			else
 			{
-				vehicle.ClearCustomPrimaryColor();
-				vehicle.PrimaryColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
+				mods.ClearCustomPrimaryColor();
+				mods.PrimaryColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
 			}
 
 			if (rnd.NextBoolean())
 			{
-				vehicle.CustomSecondaryColor = rnd.NextColor();
+				mods.CustomSecondaryColor = rnd.NextColor();
 			} else
 			{
-				vehicle.ClearCustomSecondaryColor();
-				vehicle.SecondaryColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
+				mods.ClearCustomSecondaryColor();
+				mods.SecondaryColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
 			}
 
-			vehicle.NeonLightsColor = rnd.NextColor();
-			vehicle.TireSmokeColor = rnd.NextColor();
-			vehicle.RimColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
+			mods.NeonLightsColor = rnd.NextColor();
+			mods.TireSmokeColor = rnd.NextColor();
+			mods.RimColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
 			// this causes the game to crash.
 			// vehicle.TrimColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
-			vehicle.PearlescentColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
+			mods.PearlescentColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
 
-			var colorCombinationCount = vehicle.ColorCombinationCount;
+			var colorCombinationCount = mods.ColorCombinationCount;
 
 			if (colorCombinationCount > 0)
 			{
-				vehicle.ColorCombination = rnd.Next(0, colorCombinationCount);
+				mods.ColorCombination = rnd.Next(0, colorCombinationCount);
 			}
 		}
 

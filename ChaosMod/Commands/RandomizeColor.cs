@@ -25,11 +25,11 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			var count = vehicle.ColorCombinationCount;
+			var count = vehicle.Mods.ColorCombinationCount;
 
 			if (count == 0)
 			{
-				vehicle.ColorCombination = mod.Rnd.Next(0, count);
+				vehicle.Mods.ColorCombination = mod.Rnd.Next(0, count);
 			}
 
 			vehicle.RandomizeColors(mod.Rnd);

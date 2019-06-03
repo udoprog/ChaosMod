@@ -66,7 +66,7 @@ namespace ChaosMod.Commands
 				ped.Detach();
 				ped.MarkAsNoLongerNeeded();
 
-				var blip = ped.AddBlip();
+				var blip = ped.AttachBlip();
 				mod.AddTicker(new EnemyBlipTicker(blip, ped));
 			}
 
@@ -102,7 +102,7 @@ namespace ChaosMod.Commands
 				return false;
 			}
 
-			this.blip.Remove();
+			this.blip.Delete();
 			return true;
 		}
 	}

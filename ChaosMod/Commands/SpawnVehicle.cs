@@ -46,7 +46,7 @@ namespace ChaosMod.Commands
 			}
 
 			vehicle.PlaceOnGround();
-			vehicle.NumberPlate = String.Concat(from.Take(8));
+			vehicle.Mods.LicensePlate = String.Concat(from.Take(8));
 			vehicle.Detach();
 			vehicle.MarkAsNoLongerNeeded();
 			mod.ShowText($"{from} gave you a vehicle! ({id})");

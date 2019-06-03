@@ -67,7 +67,7 @@ namespace ChaosMod.Commands
 				switch (control)
 				{
 					case DisabledControl.Steering:
-						Game.DisableControlThisFrame(0, Control.VehicleMoveLeftRight);
+						Game.DisableControlThisFrame(Control.VehicleMoveLeftRight);
 						break;
 				}
 

@@ -19,10 +19,9 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			var model = new Model(PedHash.Trevor);
-
-			player.RandomizeOutfit();
-			// TODO: implement this.
+			/// Currently disabled for player characters in scripthookvdotnet.
+			player.Style.RandomizeOutfit();
+			player.Style.RandomizeProps();
 			mod.ShowText($"{from} scrambled your character!");
 		}
 	}

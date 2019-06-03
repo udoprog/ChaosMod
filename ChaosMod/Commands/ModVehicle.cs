@@ -9,7 +9,7 @@ namespace ChaosMod.Commands
 	/// </summary>
 	public class ModVehicle : Command
 	{
-		public static VehicleMod[] ALL_MODS = (VehicleMod[])Enum.GetValues(typeof(VehicleMod));
+		public static VehicleModType[] ALL_MOD_TYPES = (VehicleModType[])Enum.GetValues(typeof(VehicleModType));
 
 		enum ModId
 		{
@@ -60,32 +60,35 @@ namespace ChaosMod.Commands
 				return;
 			}
 
-			vehicle.InstallModKit();
+			vehicle.Mods.InstallModKit();
 
 			vehicle.RandomizeColors(mod.Rnd);
 			vehicle.RandomizeLightsOn(mod.Rnd);
 
-			vehicle.ToggleMod(VehicleToggleMod.TireSmoke, mod.Rnd.NextBoolean());
-			vehicle.ToggleMod(VehicleToggleMod.XenonHeadlights, mod.Rnd.NextBoolean());
+			var turbo = vehicle.Mods[VehicleToggleModType.XenonHeadlights];
+
+			vehicle.Mods[VehicleToggleModType.XenonHeadlights].IsInstalled = mod.Rnd.NextBoolean();
+			vehicle.Mods[VehicleToggleModType.TireSmoke].IsInstalled = mod.Rnd.NextBoolean();
 
 			switch (id)
 			{
 				case ModId.MidTier:
 					// 50% chance of getting a turbo.
-					vehicle.ToggleMod(VehicleToggleMod.Turbo, mod.Rnd.NextBoolean());
+					turbo.IsInstalled = mod.Rnd.NextBoolean();
 					break;
 				case ModId.HighTier:
 					// 75% chance of getting a turbo.
-					vehicle.ToggleMod(VehicleToggleMod.Turbo, mod.Rnd.Next(0, 4) != 0);
+					turbo.IsInstalled = mod.Rnd.Next(0, 4) != 0;
 					break;
 				default:
-					vehicle.ToggleMod(VehicleToggleMod.Turbo, false);
+					turbo.IsInstalled = false;
 					break;
 			}
 
-			foreach (var m in ALL_MODS)
+			foreach (var m in ALL_MOD_TYPES)
 			{
-				var count = vehicle.GetModCount(VehicleMod.FrontBumper);
+				VehicleMod modType = vehicle.Mods[m];
+				var count = modType.ModCount;
 
 				if (count == 0)
 				{
@@ -114,18 +117,7 @@ namespace ChaosMod.Commands
 				}
 
 				var index = mod.Rnd.Next(bottom, ceiling);
-
-				var existing = vehicle.GetMod(m);
-
-				if (existing >= 0)
-				{
-					vehicle.SetMod(m, existing, false);
-				}
-
-				if (index > 0)
-				{
-					vehicle.SetMod(m, index - 1, true);
-				}
+				modType.Index = index;
 			}
 
 			mod.ShowText($"{from} modded your vehicle ({id})!");

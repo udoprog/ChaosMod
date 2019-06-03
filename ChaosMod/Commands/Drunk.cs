@@ -38,7 +38,6 @@ namespace ChaosMod.Commands
 				animationSet = "move_m@drunk@verydrunk";
 				what = "VERY drunk";
 				Function.Call(Hash._START_SCREEN_EFFECT, "DrugsDrivingOut", 0, 0);
-				Function.Call(Hash._0x293220DA1B46CEBC, 4.0, 12.0, 4);
 			}
 
 			var timer = mod.Timer(what, 20f);

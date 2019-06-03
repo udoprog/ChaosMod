@@ -17,7 +17,7 @@ namespace ChaosMod.Commands
 			var minutes = mod.Rnd.Next(0, 59);
 			var seconds = mod.Rnd.Next(0, 59);
 			TimeSpan currentDayTime = new TimeSpan(hours, minutes, seconds);
-			World.CurrentDayTime = currentDayTime;
+			World.CurrentTimeOfDay = currentDayTime;
 			World.Weather = ALL_WEATHERS[mod.Rnd.Next(0, ALL_WEATHERS.Length)];
 
 			mod.ShowText($"{from} scrambled the current weather!");

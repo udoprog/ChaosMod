@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ChaosMod</RootNamespace>
     <AssemblyName>ChaosMod</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,15 +30,15 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NativeUI, Version=1.8.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\NativeUI.dll</HintPath>
     </Reference>
-    <Reference Include="ScriptHookVDotNet2, Version=2.10.9.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\ScriptHookVDotNet2.dll</HintPath>
+    <Reference Include="ScriptHookVDotNet3">
+      <HintPath>..\lib\ScriptHookVDotNet3.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,6 +46,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ChangeCurrentVehicle.cs" />
     <Compile Include="Commands\Superman.cs" />
     <Compile Include="Commands\Kill.cs" />
     <Compile Include="Commands\FuelLeakage.cs" />
@@ -65,6 +67,7 @@
     <Compile Include="Commands\SetOnFire.cs" />
     <Compile Include="Commands\Drunk.cs" />
     <Compile Include="Commands\ExplodingBullets.cs" />
+    <Compile Include="Commands\Skyfall.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Commands\Brake.cs" />
@@ -86,7 +89,7 @@
     <Compile Include="Commands\Boost.cs" />
     <Compile Include="Commands\TakeHealth.cs" />
     <Compile Include="Commands\Stumble.cs" />
-    <Compile Include="Commands\RandomizeVehicle.cs" />
+    <Compile Include="Commands\RandomizeDoors.cs" />
     <Compile Include="Commands\RandomizeCharacter.cs" />
     <Compile Include="Commands\RandomizeColor.cs" />
     <Compile Include="Commands\License.cs" />

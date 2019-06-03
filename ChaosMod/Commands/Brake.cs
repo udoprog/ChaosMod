@@ -41,7 +41,7 @@ namespace ChaosMod.Commands
 		{
 			this.vehicle = vehicle;
 			this.timer = timer;
-			this.vehicle.HandbrakeOn = true;
+			this.vehicle.IsHandbrakeForcedOn = true;
 		}
 
 		public override void Stop()
@@ -51,8 +51,13 @@ namespace ChaosMod.Commands
 
 		public override bool Tick()
 		{
-			vehicle.HandbrakeOn = false;
-			return timer.Tick();
+			if (timer.Tick())
+			{
+				vehicle.IsHandbrakeForcedOn = false;
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

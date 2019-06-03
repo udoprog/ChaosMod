@@ -35,7 +35,7 @@ namespace ChaosMod.Commands
 			}
 
 			var position = new GTA.Math.Vector2(entity.Position.X, entity.Position.Y);
-			var height = World.GetGroundHeight(position) + extraHeight;
+			var height = entity.Position.Z + extraHeight;
 
 			var timer = mod.Timer("Levitation", 10f);
 			mod.AddUniqueTicker(TickerId.Levitation, new LevitateController(timer, entity, height, mod.Rnd, jitter));

@@ -15,7 +15,6 @@ namespace ChaosMod
 {
 	public class Chaos : Script
 	{
-		private Socket socket;
 		private const int bufSize = 8 * 1024;
 		private State state;
 		private EndPoint epFrom = new IPEndPoint(IPAddress.Any, 0);
@@ -69,17 +68,23 @@ namespace ChaosMod
 			timers = new TimerBarPool();
 			menu = BuildMenu();
 
-			this.Tick += (o, e) => timers.Draw();
-			this.Tick += (o, e) => menu.Draw();
-			this.Tick += OnTick;
-			this.KeyDown += OnKeyDown;
+			Tick += (o, e) => timers.Draw();
+			Tick += (o, e) => menu.Draw();
+			Tick += OnTick;
+			KeyDown += OnKeyDown;
 
-			socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+			var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 			socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.ReuseAddress, true);
 			socket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7291));
-			state = new State();
 
-			Receive();
+			// Note: this is the only way to make sure we close the fricking socket.
+			Aborted += (o, e) =>
+			{
+				socket.Close();
+			};
+
+			state = new State();
+			Receive(socket);
 
 			Rnd = new Random();
 			HateGroup = new HateGroup();
@@ -121,7 +126,6 @@ namespace ChaosMod
 			d.Add("randomize-weather", new Commands.RandomizeWeather());
 			d.Add("randomize-color", new Commands.RandomizeColor());
 			d.Add("randomize-character", new Commands.RandomizeCharacter());
-			d.Add("randomize-vehicle", new Commands.RandomizeVehicle());
 			d.Add("license", new Commands.License());
 			d.Add("invincibility", new Commands.Invincibility());
 			d.Add("stumble", new Commands.Stumble());
@@ -163,6 +167,9 @@ namespace ChaosMod
 			d.Add("fire-ammo", new Commands.FireAmmo());
 			d.Add("fuel-leakage", new Commands.FuelLeakage());
 			d.Add("superman", new Commands.Superman());
+			d.Add("change-current-vehicle", new Commands.ChangeCurrentVehicle());
+			d.Add("randomize-doors", new Commands.RandomizeDoors());
+			d.Add("skyfall", new Commands.Skyfall());
 			return d;
 		}
 
@@ -227,25 +234,30 @@ namespace ChaosMod
 			CheckQueue();
 		}
 
-		void Receive()
+		void Receive(Socket socket)
 		{
 			socket.BeginReceiveFrom(state.buffer, 0, bufSize, SocketFlags.None, ref epFrom, recv = (ar) =>
 			{
 				State so = (State)ar.AsyncState;
-				int bytes = socket.EndReceiveFrom(ar, ref epFrom);
+				int bytes = 0;
+
+				try
+				{
+					bytes = socket.EndReceiveFrom(ar, ref epFrom);
+				} catch(ObjectDisposedException)
+				{
+					return;
+				}
+
 				socket.BeginReceiveFrom(so.buffer, 0, bufSize, SocketFlags.None, ref epFrom, recv, so);
 				var s = Encoding.ASCII.GetString(so.buffer, 0, bytes);
 				state.queue.Enqueue(s);
 			}, state);
 		}
 
-		/// <summary>
-		/// Show text with default timer.
-		/// </summary>
 		public void ShowText(String text)
 		{
-			UI.Notify(text);
-			// ShowText(text, 5f);
+			GTA.UI.Notification.Show(text);
 		}
 
 		/// <summary>
@@ -253,7 +265,7 @@ namespace ChaosMod
 		/// </summary>
 		public void ShowText(String text, float timer)
 		{
-			UI.Notify(text);
+			GTA.UI.Notification.Show(text);
 		}
 
 		private void CheckQueue()
@@ -270,7 +282,7 @@ namespace ChaosMod
 
 				if (parts.Length < 3)
 				{
-					UI.Notify($"received bad command");
+					GTA.UI.Notification.Show($"received bad command");
 					return;
 				}
 
@@ -301,9 +313,9 @@ namespace ChaosMod
 			catch (Exception e)
 			{
 #if DEBUG
-				UI.Notify($"something went wrong\nuser: {from}\nid: {id}\nname: {name}\nException: {e}");
+				GTA.UI.Notification.Show($"something went wrong\nuser: {from}\nid: {id}\nname: {name}\nException: {e}");
 #else
-				UI.Notify($"something went wrong\nuser: {from}\nid: {id}\nname: {name}");
+				GTA.UI.Notification.Show($"something went wrong\nuser: {from}\nid: {id}\nname: {name}");
 #endif
 			}
 		}
@@ -636,7 +648,6 @@ namespace ChaosMod
 		{
 			VehicleHash.Blimp,
 			VehicleHash.Blimp2,
-			VehicleHash.Blimp3,
 		};
 
 		static VehicleHash[] JET_SKIS = new VehicleHash[]
@@ -671,7 +682,6 @@ namespace ChaosMod
 			cars.Add(new VehicleHash[] { VehicleHash.Bus });
 			cars.Add(new VehicleHash[] { VehicleHash.RentalBus });
 			cars.Add(new VehicleHash[] { VehicleHash.PBus });
-			cars.Add(new VehicleHash[] { VehicleHash.PBus2 });
 			cars.Add(new VehicleHash[] { VehicleHash.Cutter });
 			cars.Add(new VehicleHash[] { VehicleHash.Bulldozer });
 			cars.Add(new VehicleHash[] { VehicleHash.Peyote });
@@ -724,7 +734,7 @@ namespace ChaosMod
 			cars.Add(new VehicleHash[] { VehicleHash.Massacro, VehicleHash.Massacro2 });
 			cars.Add(new VehicleHash[] { VehicleHash.Ninef, VehicleHash.Ninef2, });
 			cars.Add(new VehicleHash[] { VehicleHash.Surano });
-			cars.Add(new VehicleHash[] { VehicleHash.Comet2, VehicleHash.Comet3, VehicleHash.Comet4, VehicleHash.Comet5 });
+			cars.Add(new VehicleHash[] { VehicleHash.Comet2, VehicleHash.Comet3 });
 			cars.Add(new VehicleHash[] { VehicleHash.Carbonizzare, });
 			cars.Add(new VehicleHash[] { VehicleHash.Banshee, VehicleHash.Banshee2 });
 			cars.Add(new VehicleHash[] { VehicleHash.Coquette, VehicleHash.Coquette2, VehicleHash.Coquette3, });
@@ -735,9 +745,6 @@ namespace ChaosMod
 				VehicleHash.Dominator,
 				VehicleHash.Dominator2,
 				VehicleHash.Dominator3,
-				VehicleHash.Dominator4,
-				VehicleHash.Dominator5,
-				VehicleHash.Dominator6,
 			});
 
 			return cars;
@@ -891,13 +898,11 @@ namespace ChaosMod
 		{
 			var d = new Dictionary<String, WeaponHash[]>();
 
-			d.Add("ak47", new WeaponHash[] { WeaponHash.AssaultRifle, WeaponHash.AssaultrifleMk2 });
+			d.Add("ak47", new WeaponHash[] { WeaponHash.AssaultRifle });
 			d.Add("assault-rifle", new WeaponHash[] { WeaponHash.AssaultRifle });
-			d.Add("assault-rifle-mk2", new WeaponHash[] { WeaponHash.AssaultrifleMk2 });
 
-			d.Add("m4", new WeaponHash[] { WeaponHash.CarbineRifle, WeaponHash.CarbineRifleMk2 });
+			d.Add("m4", new WeaponHash[] { WeaponHash.CarbineRifle });
 			d.Add("carbine-rifle", new WeaponHash[] { WeaponHash.CarbineRifle });
-			d.Add("carbine-rifle-mk2", new WeaponHash[] { WeaponHash.CarbineRifleMk2 });
 
 			d.Add("grenade", new WeaponHash[] { WeaponHash.Grenade });
 			d.Add("c4", new WeaponHash[] { WeaponHash.StickyBomb });
@@ -917,8 +922,8 @@ namespace ChaosMod
 				WeaponHash.Minigun
 			});
 
-			d.Add("hellbringer", new WeaponHash[] {
-				WeaponHash.UnholyHellbringer
+			d.Add("pistol", new WeaponHash[] {
+				WeaponHash.Pistol
 			});
 
 			d.Add("parachute", new WeaponHash[] {
@@ -934,7 +939,7 @@ namespace ChaosMod
 	/// </summary>
 	public class HateGroup
 	{
-		public int GroupId
+		public RelationshipGroup GroupId
 		{
 			get;
 		}
@@ -942,7 +947,7 @@ namespace ChaosMod
 		public HateGroup()
 		{
 			GroupId = World.AddRelationshipGroup("hates-player");
-			World.SetRelationshipBetweenGroups(Relationship.Hate, Game.GenerateHash("PLAYER"), this.GroupId);
+			GroupId.SetRelationshipBetweenGroups(Game.GenerateHash("PLAYER"), Relationship.Hate);
 		}
 	}
 
@@ -955,6 +960,14 @@ namespace ChaosMod
 		/// Get the remaining time.
 		/// </summary>
 		float Remaining
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Get the total duration of the timer.
+		/// </summary>
+		float Duration
 		{
 			get;
 		}
@@ -982,6 +995,14 @@ namespace ChaosMod
 			get
 			{
 				return duration - elapsed;
+			}
+		}
+
+		public float Duration
+		{
+			get
+			{
+				return duration;
 			}
 		}
 
@@ -1026,11 +1047,15 @@ namespace ChaosMod
 		private TimerBarPool pool;
 
 		public float Time;
-		public float Duration;
+		public float Duration
+		{
+			get;
+		}
 
 		public float Remaining
 		{
-			get {
+			get
+			{
 				return Duration - Time;
 			}
 		}
@@ -1074,7 +1099,11 @@ namespace ChaosMod
 		private float magnitude;
 
 		public float Time;
-		public float Duration;
+		public float Duration
+		{
+			get;
+			set;
+		}
 
 		public float Remaining
 		{

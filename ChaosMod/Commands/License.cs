@@ -35,7 +35,7 @@ namespace ChaosMod.Commands
 
 			license = String.Concat(license.Take(8));
 
-			vehicle.NumberPlate = license;
+			vehicle.Mods.LicensePlate = license;
 			mod.ShowText($"{from} set your license plate to \"{license}\"!");
 		}
 	}
