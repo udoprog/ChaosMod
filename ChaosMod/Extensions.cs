@@ -292,6 +292,11 @@ namespace ChaosMod
 
 			return new LevitateController(timer, vehicle, height, rnd, jitter);
 		}
+
+		public static bool IsVehicleTyreBurst(this Vehicle vehicle, int id, bool completely)
+		{
+			return Function.Call<bool>(Hash.IS_VEHICLE_TYRE_BURST, vehicle.Handle, id, completely);
+		}
 	}
 
 	public static class RandomExtension

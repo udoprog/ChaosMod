@@ -183,7 +183,7 @@ namespace ChaosMod
 		{
 			HandleKeyDowns();
 
-			if (e.KeyCode == Keys.Enter)
+			if (e.KeyCode == Keys.H)
 			{
 				var selection = menu.MenuItems[menu.CurrentSelection];
 
@@ -383,6 +383,14 @@ namespace ChaosMod
 		public void AddKeyDown(IKeyDown keyDown)
 		{
 			this.keyDowns.AddLast(keyDown);
+		}
+
+		/// <summary>
+		/// Check if the given ticker is active.
+		/// </summary>
+		public bool HasTicker(TickerId id)
+		{
+			return uniqueTickers.ContainsKey(id);
 		}
 
 		/// <summary>

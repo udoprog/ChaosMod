@@ -9,6 +9,8 @@ namespace ChaosMod.Commands
 	/// </summary>
 	public class BlowTires : Command
 	{
+		static int[] WHEELS = new int[] { 0, 1, 2, 3, 4, 5, 45, 47 };
+
 		public void Handle(Chaos mod, String from, IEnumerable<String> rest)
 		{
 			Ped player = Game.Player.Character;
@@ -27,9 +29,17 @@ namespace ChaosMod.Commands
 
 			var wheels = vehicle.Wheels;
 
-			for (var i = 0; i < wheels.Count; i++)
+			foreach (var i in WHEELS)
 			{
-				wheels[i].Burst();
+				if (vehicle.IsVehicleTyreBurst(i, true))
+				{
+					continue;
+				}
+
+				if (mod.Rnd.NextBoolean())
+				{
+					wheels[i].Burst();
+				}
 			}
 
 			mod.ShowText($"{from} blew out your tires!");

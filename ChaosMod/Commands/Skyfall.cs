@@ -25,9 +25,14 @@ namespace ChaosMod.Commands
 				player.CurrentVehicle.Delete();
 			}
 
-			if (player.HeightAboveGround > 2)
+			switch (player.ParachuteState)
 			{
-				return;
+				case ParachuteState.Deploying:
+				case ParachuteState.Gliding:
+					player.Task.UseParachute();
+					break;
+				default:
+					break;
 			}
 
 			var timer = mod.Timer("Skyfall", 20f);
@@ -39,11 +44,13 @@ namespace ChaosMod.Commands
 		{
 			Timer timer;
 			Ped player;
+			bool putAwayParachute;
 
 			public SkyfallTicker(Ped player, Timer timer)
 			{
 				this.player = player;
 				this.timer = timer;
+				this.putAwayParachute = false;
 			}
 
 			public override void Stop()
@@ -53,23 +60,32 @@ namespace ChaosMod.Commands
 
 			public override bool Tick()
 			{
+				if (!player.IsAlive)
+				{
+					return true;
+				}
+
 				switch (player.ParachuteState)
 				{
 					case ParachuteState.Deploying:
 					case ParachuteState.Gliding:
-						return true;
+						if (putAwayParachute)
+						{
+							return true;
+						}
+						break;
 					case ParachuteState.None:
 						player.Task.ClearAll();
 						player.Task.Skydive();
 						break;
 					default:
+						putAwayParachute = true;
 						break;
 				}
 
 				var factor = timer.Remaining / timer.Duration;
 				var facing = player.ForwardVector * 10_000f * (1 - factor);
 				var up = GTA.Math.Vector3.WorldUp * 1_000f * factor;
-				var rotation = GTA.Math.Vector3.Zero;
 				player.ApplyForce(up + facing);
 				return timer.Tick();
 			}

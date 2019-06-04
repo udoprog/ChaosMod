@@ -18,6 +18,7 @@ namespace ChaosMod.Commands
 				return;
 			}
 
+			var time = 10f;
 			var extraHeight = 4f;
 			var entity = (Entity) player;
 			float? jitter = null;
@@ -29,15 +30,15 @@ namespace ChaosMod.Commands
 				extraHeight = 10f + (float) (mod.Rnd.NextDouble() * 5f);
 			} else
 			{
+				time = 7f;
 				player.Euphoria.HighFall.Start(10_000);
 				jitter = 0.05f;
 				extraHeight += (float) (mod.Rnd.NextDouble() * 2f);
 			}
 
-			var position = new GTA.Math.Vector2(entity.Position.X, entity.Position.Y);
 			var height = entity.Position.Z + extraHeight;
 
-			var timer = mod.Timer("Levitation", 10f);
+			var timer = mod.Timer("Levitation", time);
 			mod.AddUniqueTicker(TickerId.Levitation, new LevitateController(timer, entity, height, mod.Rnd, jitter));
 			mod.ShowText($"{from} caused you to levitate!");
 		}

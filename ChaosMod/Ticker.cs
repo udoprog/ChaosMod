@@ -115,7 +115,7 @@ namespace ChaosMod
 
 		public override bool Tick()
 		{
-			if (timer.Tick())
+			if (timer.Tick() || !entity.IsAlive)
 			{
 				return true;
 			}
