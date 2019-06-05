@@ -251,7 +251,8 @@ namespace ChaosMod
 				try
 				{
 					bytes = socket.EndReceiveFrom(ar, ref epFrom);
-				} catch(ObjectDisposedException)
+				}
+				catch (ObjectDisposedException)
 				{
 					return;
 				}
@@ -570,7 +571,8 @@ namespace ChaosMod
 					VehicleHash byId = VehicleHash.Adder;
 
 					// Match by ID.
-					if (ALL_VEHICLES_BY_ID.TryGetValue(vehicle, out byId)) {
+					if (ALL_VEHICLES_BY_ID.TryGetValue(vehicle, out byId))
+					{
 						return byId;
 					}
 

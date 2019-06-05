@@ -20,20 +20,21 @@ namespace ChaosMod.Commands
 
 			var time = 10f;
 			var extraHeight = 4f;
-			var entity = (Entity) player;
+			var entity = (Entity)player;
 			float? jitter = null;
 
 			// parameters when in vehicle
 			if (player.CurrentVehicle != null)
 			{
 				entity = player.CurrentVehicle;
-				extraHeight = 10f + (float) (mod.Rnd.NextDouble() * 5f);
-			} else
+				extraHeight = 10f + (float)(mod.Rnd.NextDouble() * 5f);
+			}
+			else
 			{
 				time = 7f;
 				player.Euphoria.HighFall.Start(10_000);
 				jitter = 0.05f;
-				extraHeight += (float) (mod.Rnd.NextDouble() * 2f);
+				extraHeight += (float)(mod.Rnd.NextDouble() * 2f);
 			}
 
 			var height = entity.Position.Z + extraHeight;

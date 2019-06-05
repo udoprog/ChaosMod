@@ -116,7 +116,7 @@ namespace ChaosMod.Commands
 			{
 				this.scriptFires = scriptFires;
 				this.timer = timer;
-				this.lastSecond = (int) timer.Remaining;
+				this.lastSecond = (int)timer.Remaining;
 			}
 
 			public override void Stop()
@@ -126,7 +126,7 @@ namespace ChaosMod.Commands
 
 			public override bool Tick()
 			{
-				var second = (int) timer.Remaining;
+				var second = (int)timer.Remaining;
 
 				if (second != lastSecond)
 				{

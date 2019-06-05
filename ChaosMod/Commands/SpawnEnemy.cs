@@ -53,7 +53,7 @@ namespace ChaosMod.Commands
 				var ped = World.CreatePed(new Model(pedHash), player.Position.Around(distance));
 				var weapon = ped.Weapons.Give(weaponHash, 0, true, true);
 				weapon.Ammo = weapon.MaxAmmo;
-	
+
 				ped.IsEnemy = true;
 				ped.RelationshipGroup = mod.HateGroup.GroupId;
 
@@ -73,7 +73,8 @@ namespace ChaosMod.Commands
 			if (amount == 1)
 			{
 				mod.ShowText($"{from} spawned an fib operative out to get you!");
-			} else
+			}
+			else
 			{
 				mod.ShowText($"{from} spawned {amount} fib operatives out to get you!");
 			}

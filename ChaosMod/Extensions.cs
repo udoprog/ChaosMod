@@ -203,7 +203,7 @@ namespace ChaosMod
 		/// </summary>
 		public static void SetCombatAttributes(this Ped ped, CombatAttributes attributes, bool enabled)
 		{
-			Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES, ped.Handle, (int) attributes, enabled);
+			Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES, ped.Handle, (int)attributes, enabled);
 		}
 
 		/// <summary>
@@ -283,7 +283,8 @@ namespace ChaosMod
 			if (rnd.NextBoolean())
 			{
 				mods.CustomSecondaryColor = rnd.NextColor();
-			} else
+			}
+			else
 			{
 				mods.ClearCustomSecondaryColor();
 				mods.SecondaryColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
