@@ -22,7 +22,7 @@ namespace ChaosMod.Commands
 				}
 
 				ped.Euphoria.Electrocute.ResetArguments();
-				ped.Euphoria.Electrocute.Start(3_000 + (int) (mod.Rnd.NextDouble() * 1_000f));
+				ped.Euphoria.Electrocute.Start(3_000 + (int)(mod.Rnd.NextDouble() * 1_000f));
 			}
 
 			var timer = mod.Timer("Tazed Others", 3);

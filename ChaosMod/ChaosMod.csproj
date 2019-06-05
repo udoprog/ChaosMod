@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\ChangeCurrentVehicle.cs" />
+    <Compile Include="Commands\EuphoriaTest.cs" />
+    <Compile Include="Commands\LockAbility.cs" />
     <Compile Include="Commands\TazeOthers.cs" />
     <Compile Include="Commands\Taze.cs" />
     <Compile Include="Commands\Superman.cs" />
@@ -71,6 +73,8 @@
     <Compile Include="Commands\ExplodingBullets.cs" />
     <Compile Include="Commands\Skyfall.cs" />
     <Compile Include="Commands\ReduceGravity.cs" />
+    <Compile Include="Commands\TripPeds.cs" />
+    <Compile Include="Commands\UnlockAbility.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Commands\Brake.cs" />

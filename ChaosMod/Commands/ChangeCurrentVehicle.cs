@@ -67,7 +67,8 @@ namespace ChaosMod.Commands
 				newVehicle.Throttle = vehicle.Throttle;
 				newVehicle.IsEngineRunning = vehicle.IsEngineRunning;
 
-				for (var seatIndex = -1; seatIndex < newVehicle.PassengerCapacity; seatIndex++) {
+				for (var seatIndex = -1; seatIndex < newVehicle.PassengerCapacity; seatIndex++)
+				{
 					var seat = (VehicleSeat)seatIndex;
 					var ped = vehicle.GetPedOnSeat(seat);
 

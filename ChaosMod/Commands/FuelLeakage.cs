@@ -81,7 +81,8 @@ namespace ChaosMod.Commands
 				{
 					gauge.Visible = false;
 				}
-			} else
+			}
+			else
 			{
 				if (player.CurrentVehicle == vehicle)
 				{

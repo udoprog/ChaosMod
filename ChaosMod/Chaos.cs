@@ -173,6 +173,10 @@ namespace ChaosMod
 			d.Add("taze", new Commands.Taze());
 			d.Add("taze-others", new Commands.TazeOthers());
 			d.Add("reduce-gravity", new Commands.ReduceGravity());
+			d.Add("trip-peds", new Commands.TripPeds());
+			d.Add("ability-lock", new Commands.LockAbility());
+			d.Add("ability-unlock", new Commands.UnlockAbility());
+			d.Add("euphoria-test", new Commands.EuphoriaTest());
 			return d;
 		}
 
@@ -247,7 +251,8 @@ namespace ChaosMod
 				try
 				{
 					bytes = socket.EndReceiveFrom(ar, ref epFrom);
-				} catch(ObjectDisposedException)
+				}
+				catch (ObjectDisposedException)
 				{
 					return;
 				}
@@ -395,7 +400,7 @@ namespace ChaosMod
 
 		/// <summary>
 		/// Add a ticker which there can only exist one of.
-		/// 
+		///
 		/// If the ticker exists, replaces it and returns false.
 		/// Otherwise returns true.
 		/// </summary>
@@ -566,7 +571,8 @@ namespace ChaosMod
 					VehicleHash byId = VehicleHash.Adder;
 
 					// Match by ID.
-					if (ALL_VEHICLES_BY_ID.TryGetValue(vehicle, out byId)) {
+					if (ALL_VEHICLES_BY_ID.TryGetValue(vehicle, out byId))
+					{
 						return byId;
 					}
 

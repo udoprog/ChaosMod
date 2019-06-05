@@ -171,7 +171,7 @@ namespace ChaosMod
 
 		/// <summary>
 		/// Set the given ped on fire.
-		/// 
+		///
 		/// NOTE: This doesn't work very well.
 		/// It seems like the game has a fixed limit on how many fires it can run at any given time, and there's no consistent way to clean it up.
 		/// Even StopEntityFire doesn't help.
@@ -203,7 +203,7 @@ namespace ChaosMod
 		/// </summary>
 		public static void SetCombatAttributes(this Ped ped, CombatAttributes attributes, bool enabled)
 		{
-			Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES, ped.Handle, (int) attributes, enabled);
+			Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES, ped.Handle, (int)attributes, enabled);
 		}
 
 		/// <summary>
@@ -213,6 +213,31 @@ namespace ChaosMod
 		{
 			Function.Call(Hash.SET_HIGH_FALL_TASK, ped.Handle, 0, 0, 0);
 		}
+
+		/// <summary>
+		/// Toggles (Possibly) use of Special Ability
+		/// </summary>
+		public static void ToggleSpecialAbility(this Player player, bool toggle)
+		{
+			Function.Call(Hash.ENABLE_SPECIAL_ABILITY, player.Handle, toggle);
+		}
+
+		/// <summary>
+		/// Locks Special Ability
+		/// </summary>
+		public static void LockSpecialAbility(this Hash playerModel)
+		{
+			Function.Call(Hash.SPECIAL_ABILITY_LOCK, Game.Player.Character.Model);
+		}
+
+		/// <summary>
+		/// Unocks Special Ability
+		/// </summary>
+		public static void UnlockSpecialAbility(this Hash playerModel)
+		{
+			Function.Call(Hash.SPECIAL_ABILITY_UNLOCK, Game.Player.Character.Model);
+		}
+
 	}
 
 	public static class VehicleExtension
@@ -258,7 +283,8 @@ namespace ChaosMod
 			if (rnd.NextBoolean())
 			{
 				mods.CustomSecondaryColor = rnd.NextColor();
-			} else
+			}
+			else
 			{
 				mods.ClearCustomSecondaryColor();
 				mods.SecondaryColor = VEHICLE_COLORS[rnd.Next(0, VEHICLE_COLORS.Length)];
