@@ -15,7 +15,7 @@ namespace ChaosMod.Commands
 
 			if (player == null)
 			{
-				mod.ShowText($"{from} tried to enable matrix slam :(");
+				mod.ShowText($"{from} tried to make you skyfall :(");
 				return;
 			}
 
