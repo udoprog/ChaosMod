@@ -146,7 +146,7 @@ namespace ChaosMod
 
 		/// <summary>
 		/// Set the given ped on fire.
-		/// 
+		///
 		/// NOTE: This doesn't work very well.
 		/// It seems like the game has a fixed limit on how many fires it can run at any given time, and there's no consistent way to clean it up.
 		/// Even StopEntityFire doesn't help.
@@ -196,6 +196,31 @@ namespace ChaosMod
 		{
 			Function.Call(Hash.SET_PED_TO_RAGDOLL, ped.Handle, timeMillis, standupMillis, ragdollType, false, false, false);
 		}
+
+		/// <summary>
+		/// Toggles (Possibly) use of Special Ability
+		/// </summary>
+		public static void ToggleSpecialAbility(this Player player, bool toggle)
+		{
+			Function.Call(Hash.ENABLE_SPECIAL_ABILITY, player.Handle, toggle);
+		}
+
+		/// <summary>
+		/// Locks Special Ability
+		/// </summary>
+		public static void LockSpecialAbility(this Hash playerModel)
+		{
+			Function.Call(Hash.SPECIAL_ABILITY_LOCK, Game.Player.Character.Model);
+		}
+
+		/// <summary>
+		/// Unocks Special Ability
+		/// </summary>
+		public static void UnlockSpecialAbility(this Hash playerModel)
+		{
+			Function.Call(Hash.SPECIAL_ABILITY_UNLOCK, Game.Player.Character.Model);
+		}
+
 	}
 
 	public static class VehicleExtension

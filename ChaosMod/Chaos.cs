@@ -163,6 +163,10 @@ namespace ChaosMod
 			d.Add("fire-ammo", new Commands.FireAmmo());
 			d.Add("fuel-leakage", new Commands.FuelLeakage());
 			d.Add("superman", new Commands.Superman());
+			d.Add("trip-peds", new Commands.TripPeds());
+			d.Add("ability-lock", new Commands.LockAbility());
+			d.Add("ability-unlock", new Commands.UnlockAbility());
+			d.Add("euphoria-test", new Commands.EuphoriaTest());
 			return d;
 		}
 
@@ -372,7 +376,7 @@ namespace ChaosMod
 
 		/// <summary>
 		/// Add a ticker which there can only exist one of.
-		/// 
+		///
 		/// If the ticker exists, replaces it and returns false.
 		/// Otherwise returns true.
 		/// </summary>
