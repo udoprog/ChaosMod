@@ -15,8 +15,23 @@ The bot that handles this is [setmod].
 These need to be installed to run `ChaosMod`:
 
 * Only works for 1.27 right now, later versions seem to crash.
-* [ScriptHookV.NET](https://www.gta5-mods.com/tools/scripthookv-net)
-* [NativeUI](https://github.com/Guad/NativeUI/releases/)
+* [ScriptHookV](http://www.dev-c.com/gtav/scripthookv/)
+
+After this, you'll need to copy the following into your `<GTAV>` folder:
+
+```
+ScriptHookVDotNet.asi
+ScriptHookVDotNet3.dll
+```
+
+You _must not_ have `ScriptHookVDotNet2.dll` installed.
+
+Then copy the following into your `<GTAV>/scripts` folder:
+
+```
+NativeUI.dll
+ChaosMod-<version>.dll
+```
 
 After this, drop `ChaosMod-<version>.dll` into your scripts folder.
 
