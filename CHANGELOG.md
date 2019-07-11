@@ -6,7 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/udoprog/setmod/compare/1.2.0...HEAD
+[Unreleased]: https://github.com/udoprog/setmod/compare/1.3.0...HEAD
+
+## [1.3.0]
+
+- Add commands:
+  * `change-current-vehicle`
+  * `randomize-doors`
+  * `skyfall`
+  * `taze`
+  * `taze-others`
+  * `reduce-gravity`
+
+[1.3.0]: https://github.com/udoprog/setmod/compare/1.2.0...1.3.0
 
 ## [1.2.0]
 
