@@ -19,25 +19,27 @@ These need to be installed to run `ChaosMod`:
 
 After this, you'll need to copy the following into your `<GTAV>` folder:
 
+* [lib/ScriptHookVDotNet.asil](lib)
+* [lib/ScriptHookVDotNet3.dll](lib)
+
+You might also want to add a `ScriptHookVDotNet3.ini` with something like the following:
+
+```ini
+[Console]
+ToggleKey = "F7"
 ```
-ScriptHookVDotNet.asi
-ScriptHookVDotNet3.dll
-```
+
+This will be used to toggle ScriptHookV.NET's new integrated console which must be used to reload scripts nowadays.
 
 You _must not_ have `ScriptHookVDotNet2.dll` installed.
 
 Then copy the following into your `<GTAV>/scripts` folder:
 
-```
-NativeUI.dll
-ChaosMod-<version>.dll
-```
-
-After this, drop `ChaosMod-<version>.dll` into your scripts folder.
-
-You can either download this from [releases] or build it yourself (see below).
+* [lib/NativeUI.dll](lib) (this is built from my [fork of NativeUI] to support latest version of ScriptHookV.NET)
+* `ChaosMod-<version>.dll` (downloaded from [releases])
 
 [releases]: https://github.com/udoprog/ChaosMod/releases
+[fork of NativeUI]: https://github.com/udoprog/NativeUI/tree/shvdn3
 
 ## Building
 
