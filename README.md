@@ -1,14 +1,14 @@
 # ChaosMod for GTA V
 
-This is a the GTA V mod for the [`gtav` setmod] module.
+This is a the GTA V mod for the [`gtav` OxidizeBot] module.
 
 It is the mod side that allows viewer interaction like this:
 https://www.twitch.tv/setbac/clip/UnusualCaringNewtWOOP
 
-The bot that handles this is [setmod].
+The bot that handles this is [OxidizeBot].
 
-[`gtav` setmod]: https://github.com/udoprog/setmod#gtav
-[setmod]: https://github.com/udoprog/setmod
+[`gtav` OxidizeBot]: https://github.com/udoprog/OxidizeBot#gtav
+[OxidizeBot]: https://github.com/udoprog/OxidizeBot
 
 ## Installation
 
